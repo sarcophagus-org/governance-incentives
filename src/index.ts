@@ -1,8 +1,19 @@
 import { connect } from '@aragon/connect'
 import connectVoting from '@aragon/connect-voting'
+import { parseArgs } from 'util';
 
 const BLUE = '\x1b[36m'
 const RESET = '\x1b[0m'
+
+interface VotingData {
+  addresses?: string[];
+  executedBlockNumber: number; 
+  snapshotBlockNumber: number;
+}
+
+
+const myVoteData = {} as VotingData;
+
 
 const env = {
   network: parseInt(process.env.CHAIN_ID, 10),
@@ -16,7 +27,7 @@ async function main() {
   const votesWithCasts = await Promise.all(
     votes.map(async (vote) => ({ ...vote, casts: await vote.casts() }))
   )
-
+  
   printOrganization(org)
   printVotes(votesWithCasts)
 }
@@ -43,7 +54,17 @@ function formatVote(vote: any): string {
   console.log("------------")
   console.log("------------")
   console.log("------------")
-  console.log(vote.casts)
+
+  myVoteData.addresses = vote.casts.map(cast => {
+    return cast.voter.address 
+  })
+
+  myVoteData.executedBlockNumber = vote.executedAt
+  myVoteData.snapshotBlockNumber = vote.snapshotBlock
+
+  console.log(myVoteData)
+  
+
   let label = vote.metadata
   label = label.replace(/\n/g, ' ')
   label = label.length > 60 ? label.slice(0, 60) + '…' : label
