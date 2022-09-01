@@ -14,8 +14,10 @@
   },
   "dependencies": {
     "@aragon/connect": "^0.8.0-alpha.6",
+    "@aragon/connect-tokens": "^0.7.0",
     "@aragon/connect-voting": "^0.8.0-alpha.6",
     "@types/node": "^18.7.14",
-    "@aragon/connect-tokens": "^0.7.0"
+    "dotenv": "^16.0.2",
+    "web3": "^1.7.5"
   }
 }
