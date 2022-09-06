@@ -64,7 +64,6 @@ function printOrganization(organization: any) {
 }
  
 function printVotes(votes: any) {
-  
   for (const vote of votes) {
     myVoteData.addresses = vote.casts.map(cast => {
       return cast.voter.address 
