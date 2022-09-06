@@ -7,7 +7,8 @@
   "scripts": {
     "start": "CHAIN_ID=1 ts-node ./src/index.ts",
     "start:rinkeby": "CHAIN_ID=4 ts-node ./src/index.ts",
-    "staking": "ts-node ./src/staking.ts"
+    "staking": "ts-node ./src/staking.ts",
+    "query": "ts-node ./src/queries/index.ts"
   },
   "devDependencies": {
     "ts-node": "^8.10.2",
@@ -20,6 +21,8 @@
     "@types/node": "^18.7.14",
     "axios": "^0.27.2",
     "dotenv": "^16.0.2",
-    "web3": "^1.7.5"
+    "web3": "^1.7.5",
+    "@graphprotocol/graph-cli": "0.33.1",
+    "@graphprotocol/graph-ts": "0.27.0"
   }
 }
