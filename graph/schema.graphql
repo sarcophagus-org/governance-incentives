@@ -1,0 +1,5 @@
+type Transfer @entity {
+  id: ID
+  from: Bytes! # address
+  amount: BigInt!
+}

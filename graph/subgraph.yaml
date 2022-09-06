@@ -1,0 +1,25 @@
+specVersion: 0.0.4
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: sarcoStaking
+    network: mainnet
+    source:
+      address: "0xBD53450702A341F356d609d76044DB8a06E200B3"
+      abi: sarcoStaking
+      startBlock: 13668537
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - OnStake
+        - OnUnstake
+      abis:
+        - name: sarcoStaking
+          file: ./abis/sarcoStaking.json
+      eventHandlers:
+        - event: OnStake(address,uint256)
+          handler: handleOnStake
+      file: ./src/sarco-staking.ts
