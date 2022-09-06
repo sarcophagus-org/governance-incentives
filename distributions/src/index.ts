@@ -15,8 +15,6 @@ interface VotingData {
   snapshotBlockNumber: number;
 }
 
-const myVoteData = {} as VotingData;
-
 const env = {
   network: parseInt(process.env.CHAIN_ID, 10),
   location: process.env.ORGANIZATION ?? 'sarcophagus.aragonid.eth',
@@ -24,7 +22,7 @@ const env = {
 
 function generateVoteId(id: string): any {
   const aragonVoteIdPrefix = "appAddress:0xf483c1f7858dd19915d0689d26cb3487fc90b640-vote:"
-  let aragonVoteId = aragonVoteIdPrefix + "0x" + Number(Number(id).toString(16)).toString(16)
+  const aragonVoteId = aragonVoteIdPrefix + "0x" + Number(Number(id).toString(16)).toString(16)
   return aragonVoteId
 }
 
@@ -33,7 +31,7 @@ async function main() {
   const voting = await connectVoting(org.app('voting'))
   const votes = await voting.votes({ first: 100 })
 
-  let voteId = generateVoteId(process.env.VOTE_ID)
+  const voteId = generateVoteId(process.env.VOTE_ID)
 
   const vote = votes.find((v: any) => {
     return v.id === voteId;
@@ -64,6 +62,7 @@ function printOrganization(organization: any) {
 }
  
 function printVotes(votes: any) {
+  const myVoteData = {} as VotingData;
   for (const vote of votes) {
     myVoteData.addresses = vote.casts.map(cast => {
       return cast.voter.address 
