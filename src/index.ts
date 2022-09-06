@@ -23,7 +23,7 @@ const env = {
 }
 
 function generateVoteId(id: string): any {
-  let aragonVoteIdPrefix = "appAddress:0xf483c1f7858dd19915d0689d26cb3487fc90b640-vote:"
+  const aragonVoteIdPrefix = "appAddress:0xf483c1f7858dd19915d0689d26cb3487fc90b640-vote:"
   let aragonVoteId = aragonVoteIdPrefix + "0x" + Number(Number(id).toString(16)).toString(16)
   return aragonVoteId
 }
@@ -35,19 +35,23 @@ async function main() {
 
   let voteId = generateVoteId(process.env.VOTE_ID)
 
-  const vote = votes.filter((v: any) => {
+  const vote = votes.find((v: any) => {
     return v.id === voteId;
   })
 
-  const votesWithCasts = await Promise.all(
-    vote.map(async (vote) => ({ ...vote, casts: await vote.casts() }))
-  )
+  if(!vote) {
+    throw Error("Unable to retrieve vote: ${voteId}")
+  }
+
+  const casts = await vote.casts()
+
+  const voteWithCast = [{...vote, casts}]
 
   printOrganization(org)
   console.log("Vote Id input: ", process.env.VOTE_ID)
   console.log("Aragon Vote Id: ", voteId)
   console.log("Vote details:")
-  printVotes(votesWithCasts)
+  printVotes(voteWithCast)
 }
 
 function printOrganization(organization: any) {
