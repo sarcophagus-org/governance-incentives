@@ -1,8 +1,13 @@
 import { connect } from '@aragon/connect'
-import connectVoting from '@aragon/connect-voting'
+import connectVoting, { Vote } from '@aragon/connect-voting'
+require('dotenv').config();
 
 const BLUE = '\x1b[36m'
 const RESET = '\x1b[0m'
+
+if(!process.env.VOTE_ID) {
+  throw Error("Vote ID is required as an env variable")
+}
 
 interface VotingData {
   addresses: string[];
@@ -17,16 +22,36 @@ const env = {
   location: process.env.ORGANIZATION ?? 'sarcophagus.aragonid.eth',
 }
 
+function generateVoteId(id: string): any {
+  const aragonVoteIdPrefix = "appAddress:0xf483c1f7858dd19915d0689d26cb3487fc90b640-vote:"
+  let aragonVoteId = aragonVoteIdPrefix + "0x" + Number(Number(id).toString(16)).toString(16)
+  return aragonVoteId
+}
+
 async function main() {
   const org = await connect(env.location, 'thegraph', { network: env.network })
   const voting = await connectVoting(org.app('voting'))
   const votes = await voting.votes({ first: 100 })
-  const votesWithCasts = await Promise.all(
-    votes.map(async (vote) => ({ ...vote, casts: await vote.casts() }))
-  )
-  
+
+  let voteId = generateVoteId(process.env.VOTE_ID)
+
+  const vote = votes.find((v: any) => {
+    return v.id === voteId;
+  })
+
+  if(!vote) {
+    throw Error("Unable to retrieve vote: ${voteId}")
+  }
+
+  const casts = await vote.casts()
+
+  const voteWithCast = [{...vote, casts}]
+
   printOrganization(org)
-  printVotes(votesWithCasts)
+  console.log("Vote Id input: ", process.env.VOTE_ID)
+  console.log("Aragon Vote Id: ", voteId)
+  console.log("Vote details:")
+  printVotes(voteWithCast)
 }
 
 function printOrganization(organization: any) {
@@ -37,10 +62,8 @@ function printOrganization(organization: any) {
   console.log('  Address:', BLUE + organization.address + RESET)
   console.log('')
 }
-
+ 
 function printVotes(votes: any) {
-  console.log(` Votes (${votes.length})`)
-  console.log('')
   for (const vote of votes) {
     myVoteData.addresses = vote.casts.map(cast => {
       return cast.voter.address 
@@ -53,7 +76,6 @@ function printVotes(votes: any) {
   }
   console.log('')
 }
-
 
 main()
   .then(() => process.exit(0))
