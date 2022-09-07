@@ -21,11 +21,14 @@ async function main() {
   );
 
   const stakingVrAddresses = await stakingAddresses();
+  console.log(stakingVrAddresses)
 
-  //const votesAddresses = await votingAddresses()
+  const votesAddresses = await votingAddresses()
   //const snapshotBlockNumber = votesAddresses.snapshotBlockNumber
-  //console.log(snapshotBlockNumber)
-
+  //console.log(votesAddresses.addresses)
+  //TODO: figure out why we cannot use the snapshotBlockNumber together with other functions
+  
+  /*
   const stakingVrBalancesMap = new Map();
   
   for (let i = 0; i < stakingVrAddresses.length; i++) {
@@ -35,10 +38,20 @@ async function main() {
   }
 
   console.log(stakingVrBalancesMap)
+  */
 
   const didVoteAddresses = new Map();
-  const didNotVoteAddresses = new Map();
+
+  for (let i = 0; i < votesAddresses.addresses.length; i++) {
+    const votingAddress = votesAddresses.addresses[i]
+    const stakedValueAt = await contract.methods.stakeValueAt(votingAddress,14968124).call();
+    didVoteAddresses.set(votingAddress, stakedValueAt);
+  }
+
+  console.log(didVoteAddresses)
+
   
+  const didNotVoteAddresses = new Map();
 }
 
 
