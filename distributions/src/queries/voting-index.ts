@@ -2,6 +2,7 @@ import { connect } from '@aragon/connect'
 import connectVoting, { Vote } from '@aragon/connect-voting'
 require('dotenv').config();
 
+
 const BLUE = '\x1b[36m'
 const RESET = '\x1b[0m'
 
@@ -26,7 +27,7 @@ function generateVoteId(id: string): any {
   return aragonVoteId
 }
 
-async function main() {
+export async function main() {
   const org = await connect(env.location, 'thegraph', { network: env.network })
   const voting = await connectVoting(org.app('voting'))
   const votes = await voting.votes({ first: 100 })
