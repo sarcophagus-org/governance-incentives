@@ -1,11 +1,10 @@
 import axios from "axios";
+import { parseArgs } from "util";
 
 export function FETCH_STAKERS() {
     return `query {
         transfers {
-            id
             from
-            amount
           }
       }`;
   }
@@ -27,5 +26,23 @@ export async function subgraphQuery(query) {
   }
 }
 
-subgraphQuery(FETCH_STAKERS()).then((data) => {console.log(data)});
+subgraphQuery(FETCH_STAKERS()).then((data) => {
+  
+ var obj_entries = Object.entries(data).map(entry => {
+    return entry[1]
+  })
+
+  obj_entries.forEach(object => {
+    var i=0, arr=[];
+    // TODO: struggling to put a variable .length
+    for (let i = 0; i < 20; i++) {
+      arr[i] = object[i].from
+    }
+  
+    var uniq = [ ...new Set(arr) ]
+
+    console.log(uniq)
+  });
+});
 //make this promise a call, then console log the data
+
