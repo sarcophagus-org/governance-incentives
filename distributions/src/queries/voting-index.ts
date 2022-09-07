@@ -87,3 +87,10 @@ main()
     )
     process.exit(1)
   })
+
+
+// the goal is to return an array of addresses and the associated timestamp of the voting
+// write a single function (or two) that return this set of data
+// based on passing the vote
+// return data to you
+// start with the addresses

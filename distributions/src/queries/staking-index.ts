@@ -1,5 +1,10 @@
 import axios from "axios";
 
+interface Transfer {
+  from: string;
+}
+
+
 export function FETCH_STAKERS() {
     return `query {
         transfers {
@@ -25,36 +30,11 @@ export async function subgraphQuery(query) {
   }
 }
 
-export async function stakingAddy(query) {
-  subgraphQuery(query).then((data) => {
-    var obj_entries = Object.entries(data).map(entry => {
-       return entry[1]
-     })
-    obj_entries.forEach(object => {
-       var i=0, arr=[];
-       for (let i = 0; i < 20; i++) {
-         arr[i] = object[i].from
-       }
-  
-      var sarcoVrAddy = [ ...new Set(arr) ]
-     });
-   });
+export async function stakingAddresses(): Promise<string[]> {
+  const transfersData = await subgraphQuery(FETCH_STAKERS())
+  const transfers: Transfer[] = transfersData.transfers
+  const vrAddresses = transfers.map((transfer) => transfer.from)
+  const uniqueVrAddresses = [ ...new Set(vrAddresses) ]
+  return uniqueVrAddresses
 }
-
-subgraphQuery(FETCH_STAKERS()).then((data) => {
-  var obj_entries = Object.entries(data).map(entry => {
-     return entry[1]
-   })
-  obj_entries.forEach(object => {
-     var i=0, arr=[];
-     // TODO: struggling to put a variable .length
-     for (let i = 0; i < 20; i++) {
-       arr[i] = object[i].from
-     }
-
-    var sarcoVrAddy = [ ...new Set(arr) ]
-    console.log(sarcoVrAddy)
-     
-   });
- });
 
