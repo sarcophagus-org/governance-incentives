@@ -20,9 +20,9 @@ async function main() {
     process.env.CONTRACT_ADDRESS
   );
 
-  const stakingVrAddresses = await stakingAddresses()
+  const stakingVrAddresses = await stakingAddresses();
 
-  const votesAddresses = await votingAddresses()
+  //const votesAddresses = await votingAddresses()
   //const snapshotBlockNumber = votesAddresses.snapshotBlockNumber
   //console.log(snapshotBlockNumber)
 
@@ -36,6 +36,8 @@ async function main() {
 
   console.log(stakingVrBalancesMap)
 
+  const didVoteAddresses = new Map();
+  const didNotVoteAddresses = new Map();
   
 }
 
