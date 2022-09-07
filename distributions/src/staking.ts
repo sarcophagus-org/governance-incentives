@@ -1,6 +1,5 @@
 import { stakingAddresses } from "./queries/staking-index";
 import { votingAddresses } from "./queries/voting-index"; 
-require('dotenv').config();
 
 const Web3 = require("web3");
 
@@ -22,16 +21,23 @@ async function main() {
   );
 
   const stakingVrAddresses = await stakingAddresses()
-  //console.log(stakingVrAddresses)
 
   const votesAddresses = await votingAddresses()
-  console.log(votesAddresses)
+  //const snapshotBlockNumber = votesAddresses.snapshotBlockNumber
+  //console.log(snapshotBlockNumber)
 
-  const exampleFunction = await contract.methods.totalStakers().call();
-  //console.log(exampleFunction)
+  const stakingVrBalancesMap = new Map();
+  
+  for (let i = 0; i < stakingVrAddresses.length; i++) {
+    const stakingVrAddress = stakingVrAddresses[i]
+    const stakedValueAt = await contract.methods.stakeValueAt(stakingVrAddress,14968124).call();
+    stakingVrBalancesMap.set(stakingVrAddress, stakedValueAt);
+  }
+
+  console.log(stakingVrBalancesMap)
+
+  
 }
-
-
 
 
 
