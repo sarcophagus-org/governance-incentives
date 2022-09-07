@@ -1,4 +1,4 @@
-import { FETCH_STAKERS, subgraphQuery, stakingAddy } from "./queries/staking-index";
+import { FETCH_STAKERS, subgraphQuery, stakingAddresses } from "./queries/staking-index";
 // import { main } from "./queries/voting-index"; NOT WORKING IMPORT
 
 const Web3 = require("web3");
@@ -20,15 +20,13 @@ async function main() {
     process.env.CONTRACT_ADDRESS
   );
 
-  console.log(stakingAddy(FETCH_STAKERS))
+  const stakingVrAddresses = await stakingAddresses()
+  console.log(stakingVrAddresses)
 
 
   const exampleFunction = await contract.methods.totalStakers().call();
   //console.log(exampleFunction)
 }
-
-
-
 
 
 
