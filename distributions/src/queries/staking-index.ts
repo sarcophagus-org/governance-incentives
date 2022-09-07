@@ -4,7 +4,6 @@ interface Transfer {
   from: string;
 }
 
-
 export function FETCH_STAKERS() {
     return `query {
         transfers {

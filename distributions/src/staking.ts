@@ -1,5 +1,6 @@
-import { FETCH_STAKERS, subgraphQuery, stakingAddresses } from "./queries/staking-index";
-// import { main } from "./queries/voting-index"; NOT WORKING IMPORT
+import { stakingAddresses } from "./queries/staking-index";
+import { votingAddresses } from "./queries/voting-index"; 
+require('dotenv').config();
 
 const Web3 = require("web3");
 
@@ -21,8 +22,10 @@ async function main() {
   );
 
   const stakingVrAddresses = await stakingAddresses()
-  console.log(stakingVrAddresses)
+  //console.log(stakingVrAddresses)
 
+  const votesAddresses = await votingAddresses()
+  console.log(votesAddresses)
 
   const exampleFunction = await contract.methods.totalStakers().call();
   //console.log(exampleFunction)

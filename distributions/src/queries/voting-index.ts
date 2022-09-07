@@ -27,7 +27,8 @@ function generateVoteId(id: string): any {
   return aragonVoteId
 }
 
-export async function main() {
+
+export async function votingAddresses(): Promise<VotingData> {
   const org = await connect(env.location, 'thegraph', { network: env.network })
   const voting = await connectVoting(org.app('voting'))
   const votes = await voting.votes({ first: 100 })
@@ -46,51 +47,22 @@ export async function main() {
 
   const voteWithCast = [{...vote, casts}]
 
-  printOrganization(org)
-  console.log("Vote Id input: ", process.env.VOTE_ID)
-  console.log("Aragon Vote Id: ", voteId)
-  console.log("Vote details:")
-  printVotes(voteWithCast)
-}
-
-function printOrganization(organization: any) {
-  console.log('')
-  console.log(' Organization')
-  console.log('')
-  console.log('  Location:', BLUE + organization.location + RESET)
-  console.log('  Address:', BLUE + organization.address + RESET)
-  console.log('')
-}
- 
-function printVotes(votes: any) {
   const myVoteData = {} as VotingData;
-  for (const vote of votes) {
+  
+  for (const vote of voteWithCast) {
     myVoteData.addresses = vote.casts.map(cast => {
       return cast.voter.address 
     })
-
     myVoteData.executedBlockNumber = vote.executedAt
     myVoteData.snapshotBlockNumber = vote.snapshotBlock
-
-    console.log(myVoteData)
   }
-  console.log('')
+  return myVoteData
 }
 
-main()
-  .then(() => process.exit(0))
-  .catch((err) => {
-    console.error('')
-    console.error(err)
-    console.log(
-      'Please report any problem to https://github.com/aragon/connect/issues'
-    )
-    process.exit(1)
-  })
-
-
-// the goal is to return an array of addresses and the associated timestamp of the voting
-// write a single function (or two) that return this set of data
-// based on passing the vote
-// return data to you
-// start with the addresses
+votingAddresses()
+.then(() => process.exit(0))
+.catch((err) => {
+  console.error('')
+  console.error(err)
+  process.exit(1)
+})
