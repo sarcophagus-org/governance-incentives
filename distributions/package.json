@@ -7,7 +7,7 @@
   "scripts": {
     "start": "CHAIN_ID=1 ts-node ./src/queries/voting-index.ts",
     "start:rinkeby": "CHAIN_ID=4 ts-node ./src/index.ts",
-    "staking": "CHAIN_ID=1 ts-node ./src/staking.ts",
+    "staking": "ts-node ./src/staking.ts",
     "query": "ts-node ./src/queries/staking-index.ts"
   },
   "devDependencies": {
