@@ -1,5 +1,5 @@
-import { stakingAddresses } from "./queries/staking-index";
 import { votingAddresses } from "./queries/voting-index"; 
+import { stakingAddresses } from "./queries/staking-index-direct";
 
 const Web3 = require("web3");
 
@@ -8,6 +8,7 @@ const fs = require("fs");
 const abi  = JSON.parse(fs.readFileSync("src/abi/sarcoStaking.json"));
 
 async function main() {
+  console.log("starting")
   const network = process.env.ETHEREUM_NETWORK;
   const web3 = new Web3(
     new Web3.providers.HttpProvider(
@@ -15,17 +16,27 @@ async function main() {
     )
   );
   
+  console.log("contract call")
   const contract = new web3.eth.Contract(
     abi,
     process.env.CONTRACT_ADDRESS
   );
 
-  const stakingVrAddresses = await stakingAddresses();
-  console.log(stakingVrAddresses)
+  console.log("starting stakingVrAddresses")
 
+  try {
+    const stakingVrAddresses = await stakingAddresses()
+    console.log(stakingVrAddresses)
+  } catch(err){
+    console.log("something went wrong in stakingVrAddresses")
+    console.log(err)
+  }
+
+  
+  console.log("starting votingAddresses")
   const votesAddresses = await votingAddresses()
   //const snapshotBlockNumber = votesAddresses.snapshotBlockNumber
-  //console.log(votesAddresses.addresses)
+  console.log(votesAddresses.addresses)
   //TODO: figure out why we cannot use the snapshotBlockNumber together with other functions
   
   /*
@@ -50,7 +61,6 @@ async function main() {
 
   console.log(didVoteAddresses)
 
-  
   const didNotVoteAddresses = new Map();
 }
 
