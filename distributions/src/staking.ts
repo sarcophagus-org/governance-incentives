@@ -3,7 +3,6 @@ import { stakingAddresses } from "./queries/staking-index-direct";
 
 const Web3 = require("web3");
 
-// Loading the Sarco Staking contract ABI
 const fs = require("fs");
 const abi  = JSON.parse(fs.readFileSync("src/abi/sarcoStaking.json"));
 
@@ -34,9 +33,14 @@ async function main() {
 
   
   console.log("starting votingAddresses")
-  const votesAddresses = await votingAddresses()
-  //const snapshotBlockNumber = votesAddresses.snapshotBlockNumber
-  console.log(votesAddresses.addresses)
+  try {
+    const votesAddresses = await votingAddresses()
+    console.log(votesAddresses)
+  } catch(err) {
+    console.log("something went wrong in voting Addresses")
+    console.log(err)
+  }
+
   //TODO: figure out why we cannot use the snapshotBlockNumber together with other functions
   
   /*
@@ -49,7 +53,7 @@ async function main() {
   }
 
   console.log(stakingVrBalancesMap)
-  */
+ 
 
   const didVoteAddresses = new Map();
 
@@ -60,7 +64,7 @@ async function main() {
   }
 
   console.log(didVoteAddresses)
-
+ */
   const didNotVoteAddresses = new Map();
 }
 

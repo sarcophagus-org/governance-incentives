@@ -20,9 +20,9 @@ export async function stakingAddresses() {
     {fromBlock: 0}
     );
 
-  const allOnStakeAddresses = onStakeObject.map(obj => obj.returnValues).map(o => o.sender)
+  const allOnStakeAddresses = onStakeObject.map(event => event.returnValues).map(onStake => onStake.sender)
   const onStakeAddresses = [ ...new Set(allOnStakeAddresses) ]
-  console.log(onStakeAddresses)
+  return onStakeAddresses
 }
 
 require("dotenv").config();
