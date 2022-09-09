@@ -1,39 +1,28 @@
-import axios from "axios";
+const Web3 = require("web3");
+const fs = require("fs");
+const abi  = JSON.parse(fs.readFileSync("src/abi/sarcoStaking.json"));
 
-interface Transfer {
-  from: string;
+export async function stakingAddresses() {
+  const network = process.env.ETHEREUM_NETWORK;
+  const web3 = new Web3(
+    new Web3.providers.HttpProvider(
+      `https://${network}.infura.io/v3/${process.env.INFURA_API_KEY}`
+    )
+  );
+ 
+  const contract = new web3.eth.Contract(
+    abi,
+    process.env.CONTRACT_ADDRESS
+  );
+
+  const onStakeObject = await contract.getPastEvents(
+    "OnStake",
+    {fromBlock: 0}
+    );
+
+  const allOnStakeAddresses = onStakeObject.map(event => event.returnValues).map(onStake => onStake.sender)
+  const onStakeAddresses = [ ...new Set(allOnStakeAddresses) ]
+  return onStakeAddresses
 }
 
-export function FETCH_STAKERS() {
-    return `query {
-        transfers {
-            from
-          }
-      }`;
-  }
-
-export async function subgraphQuery(query) {
-  try {
-    const SUBGRAPH_URL = "https://api.thegraph.com/subgraphs/name/solidoracle/sarcovr";
-    const response = await axios.post(SUBGRAPH_URL, {
-      query,
-    });
-    if (response.data.errors) {
-      console.error(response.data.errors);
-      throw new Error(`Error making subgraph query ${response.data.errors}`);
-    }
-    return response.data.data;
-  } catch (error) {
-    console.error(error);
-    throw new Error(`Could not query the subgraph ${error.message}`);
-  }
-}
-
-export async function stakingAddresses(): Promise<string[]> {
-  const transfersData = await subgraphQuery(FETCH_STAKERS())
-  const transfers: Transfer[] = transfersData.transfers
-  const vrAddresses = transfers.map((transfer) => transfer.from)
-  const uniqueVrAddresses = [ ...new Set(vrAddresses) ]
-  return uniqueVrAddresses
-}
-
+require("dotenv").config();

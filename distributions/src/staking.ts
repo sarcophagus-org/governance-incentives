@@ -1,5 +1,5 @@
 import { votingAddresses } from "./queries/voting-index"; 
-import { stakingAddresses } from "./queries/staking-index-direct";
+import { stakingAddresses } from "./queries/staking-index";
 
 const Web3 = require("web3");
 
@@ -22,50 +22,45 @@ async function main() {
   );
 
   console.log("starting stakingVrAddresses")
-
   try {
-    const stakingVrAddresses = await stakingAddresses()
-    console.log(stakingVrAddresses)
+    //const stakingVrAddresses = await stakingAddresses()
+    //console.log(stakingVrAddresses)
   } catch(err){
     console.log("something went wrong in stakingVrAddresses")
     console.log(err)
   }
-
-  
   console.log("starting votingAddresses")
-  try {
-    const votesAddresses = await votingAddresses()
-    console.log(votesAddresses)
-  } catch(err) {
-    console.log("something went wrong in voting Addresses")
-    console.log(err)
+
+  const votesAddresses = await votingAddresses()
+  const didVoteAddresses = new Map();
+  console.log("new map")
+  for (let i = 0; i < votesAddresses.addresses.length; i++) {
+    const votingAddress = votesAddresses.addresses[i]
+    console.log("hello")
+    const stakedValueAt = await contract.methods.stakeValueAt(votingAddress,14968124).call();
+    didVoteAddresses.set(votingAddress, stakedValueAt);
+    console.log("loop completed")
   }
+  console.log(didVoteAddresses[0])
 
   //TODO: figure out why we cannot use the snapshotBlockNumber together with other functions
   
-  /*
-  const stakingVrBalancesMap = new Map();
-  
-  for (let i = 0; i < stakingVrAddresses.length; i++) {
-    const stakingVrAddress = stakingVrAddresses[i]
-    const stakedValueAt = await contract.methods.stakeValueAt(stakingVrAddress,14968124).call();
-    stakingVrBalancesMap.set(stakingVrAddress, stakedValueAt);
-  }
 
-  console.log(stakingVrBalancesMap)
- 
+  //Our number.
+  const number = 268342822488584468374029;
 
-  const didVoteAddresses = new Map();
 
-  for (let i = 0; i < votesAddresses.addresses.length; i++) {
-    const votingAddress = votesAddresses.addresses[i]
-    const stakedValueAt = await contract.methods.stakeValueAt(votingAddress,14968124).call();
-    didVoteAddresses.set(votingAddress, stakedValueAt);
-  }
+  //The percent that we want to get.
+  //i.e. We want to get 50% of 120.
+  const percentToGet = 50;
 
-  console.log(didVoteAddresses)
- */
-  const didNotVoteAddresses = new Map();
+  //Calculate the percent.
+  const percent = (percentToGet / 100) * number;
+
+
+
+
+
 }
 
 
