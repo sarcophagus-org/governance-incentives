@@ -1,5 +1,6 @@
 import { connect } from '@aragon/connect'
 import connectVoting, { Vote } from '@aragon/connect-voting'
+const Web3 = require("web3");
 require('dotenv').config();
 
 
@@ -29,7 +30,22 @@ function generateVoteId(id: string): any {
 
 
 export async function votingAddresses(): Promise<VotingData> {
-  const org = await connect(env.location, 'thegraph', { network: env.network })
+  const network = process.env.ETHEREUM_NETWORK;
+  const web3 = new Web3(
+    new Web3.providers.HttpProvider(
+      `https://${network}.infura.io/v3/${process.env.INFURA_API_KEY}`
+    )
+  );
+  
+  const org = await connect(
+    env.location, 
+    'thegraph', 
+    { 
+      network: env.network,
+      ethereum: web3.currentProvider
+    }
+  )
+
   const voting = await connectVoting(org.app('voting'))
   const votes = await voting.votes({ first: 100 })
 
@@ -56,7 +72,8 @@ export async function votingAddresses(): Promise<VotingData> {
     myVoteData.executedBlockNumber = vote.executedAt
     myVoteData.snapshotBlockNumber = vote.snapshotBlock
   }
-
+  
+  console.log(myVoteData)
   return myVoteData
 }
 

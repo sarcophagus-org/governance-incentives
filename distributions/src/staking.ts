@@ -1,6 +1,5 @@
 import { votingAddresses } from "./queries/voting-index"; 
 import { stakingAddresses } from "./queries/staking-index";
-
 const Web3 = require("web3");
 
 const fs = require("fs");
