@@ -70,7 +70,7 @@ async function main() {
 
 }
 
-
-
 require("dotenv").config();
-main();
+(async () => {
+  await main();
+})();
