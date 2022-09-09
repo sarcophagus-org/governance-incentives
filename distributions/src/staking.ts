@@ -30,8 +30,18 @@ async function main() {
     console.log(err)
   }
   console.log("starting votingAddresses")
-
+  try {
   const votesAddresses = await votingAddresses()
+  console.log(votesAddresses) 
+  const didVoteAddresses = new Map();
+  console.log("new map")
+  }
+  catch(err){
+    console.log("something went wrong in votesAddresses")
+    console.log(err)
+  }
+
+  /*
   const didVoteAddresses = new Map();
   console.log("new map")
   for (let i = 0; i < votesAddresses.addresses.length; i++) {
@@ -56,9 +66,7 @@ async function main() {
 
   //Calculate the percent.
   const percent = (percentToGet / 100) * number;
-
-
-
+  */
 
 
 }
