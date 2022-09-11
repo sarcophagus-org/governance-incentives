@@ -72,7 +72,6 @@ export async function votingAddresses(): Promise<VotingData> {
     myVoteData.executedBlockNumber = vote.executedAt
     myVoteData.snapshotBlockNumber = vote.snapshotBlock
   }
-
   return myVoteData
 }
 

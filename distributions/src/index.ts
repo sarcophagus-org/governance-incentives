@@ -1,12 +1,12 @@
 import { votingAddresses } from "./queries/voting-addresses"; 
-import { stakingAddresses } from "./queries/staking-addresses";
 const Web3 = require("web3");
-
+require("dotenv").config();
 const fs = require("fs");
+//import { BN } from 'web3-utils'
+
 const abi  = JSON.parse(fs.readFileSync("src/abi/sarcoStaking.json"));
 
 async function main() {
-  console.log("starting")
   const network = process.env.ETHEREUM_NETWORK;
   const web3 = new Web3(
     new Web3.providers.HttpProvider(
@@ -14,63 +14,60 @@ async function main() {
     )
   );
   
-  console.log("contract call")
   const contract = new web3.eth.Contract(
     abi,
     process.env.CONTRACT_ADDRESS
   );
 
-  console.log("starting stakingVrAddresses")
-  try {
-    //const stakingVrAddresses = await stakingAddresses()
-    //console.log(stakingVrAddresses)
-  } catch(err){
-    console.log("something went wrong in stakingVrAddresses")
-    console.log(err)
-  }
-  console.log("starting votingAddresses")
-  try {
-  const votesAddresses = await votingAddresses()
-  console.log(votesAddresses) 
-  const didVoteAddresses = new Map();
-  console.log("new map")
-  }
-  catch(err){
-    console.log("something went wrong in votesAddresses")
-    console.log(err)
-  }
+  const votesAddresses = await votingAddresses().then(() => {
+    console.log("Hello")
+  })
+
+  console.log(votesAddresses)
 
   /*
+  try {const votesAddresses = await votingAddresses()
   const didVoteAddresses = new Map();
-  console.log("new map")
+  let totalVoteBalance = 0
+  
   for (let i = 0; i < votesAddresses.addresses.length; i++) {
     const votingAddress = votesAddresses.addresses[i]
-    console.log("hello")
     const stakedValueAt = await contract.methods.stakeValueAt(votingAddress,14968124).call();
+    totalVoteBalance += stakedValueAt
     didVoteAddresses.set(votingAddress, stakedValueAt);
-    console.log("loop completed")
   }
-  console.log(didVoteAddresses[0])
+  console.log(totalVoteBalance)
+  console.log(didVoteAddresses)} catch(e) {
+    console.log(e);
+    throw e; 
+  }
 
-  //TODO: figure out why we cannot use the snapshotBlockNumber together with other functions
-  
+  console.log("HEY")
+  const totalDistributions = 1000
+  const distributionMapping = new Map();
+  for (let i = 0; i < votesAddresses.addresses.length; i++) {
+    const votingAddress = votesAddresses.addresses[i]
+    const stakedValueAt = await contract.methods.stakeValueAt(votingAddress,14968124).call();
+    const percentage = web3.utils.toBN(stakedValueAt / totalVoteBalance).toString();
+    const distributionAmount = web3.utils.toBN(totalDistributions * percentage).toString();
+    distributionMapping.set(votingAddress, distributionAmount)
+  }
 
-  //Our number.
-  const number = 268342822488584468374029;
-
-
-  //The percent that we want to get.
-  //i.e. We want to get 50% of 120.
-  const percentToGet = 50;
-
-  //Calculate the percent.
-  const percent = (percentToGet / 100) * number;
+  console.log(distributionMapping)
   */
-
-
+  //TODO: figure out why we cannot use the snapshotBlockNumber together with other functions
 }
 
-require("dotenv").config();
+/*
+(async () => {
+  console.log("Hello")
+  await main()
+  console.log("Finished")
+})();
+*/
+
 main().then(() => {
   console.log("All done!")
-})
+}).catch(err => {
+  console.log(err)
+});
