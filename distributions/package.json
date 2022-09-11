@@ -5,9 +5,9 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "CHAIN_ID=1 ts-node ./src/queries/voting-index.ts",
-    "staking": "ts-node ./src/staking.ts",
-    "query": "ts-node ./src/queries/staking-index.ts"
+    "start": "CHAIN_ID=1 ts-node ./src/index.ts",
+    "voting": "ts-node ./src/queries/voting-addresses.ts",
+    "staking": "ts-node ./src/queries/staking-addresses.ts"
   },
   "devDependencies": {
     "ts-node": "^8.10.2",

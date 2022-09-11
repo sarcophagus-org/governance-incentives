@@ -1,5 +1,5 @@
-import { votingAddresses } from "./queries/voting-index"; 
-import { stakingAddresses } from "./queries/staking-index";
+import { votingAddresses } from "./queries/voting-addresses"; 
+import { stakingAddresses } from "./queries/staking-addresses";
 const Web3 = require("web3");
 
 const fs = require("fs");
@@ -71,6 +71,6 @@ async function main() {
 }
 
 require("dotenv").config();
-(async () => {
-  await main();
-})();
+main().then(() => {
+  console.log("All done!")
+})
