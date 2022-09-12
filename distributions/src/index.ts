@@ -34,7 +34,7 @@ async function main() {
   const distributionMapping = new Map();
   for (let i = 0; i < votesAddresses.addresses.length; i++) {
     const votingAddress = votesAddresses.addresses[i]
-    const stakedValueAt = await contract.methods.stakeValueAt(votingAddress,blockNumber).call();
+    const stakedValueAt = didVoteAddresses.get(votingAddress);
     const percentage = (stakedValueAt / totalVoteBalance);
     const distributionAmount = totalDistributions * percentage;
     distributionMapping.set(votingAddress, distributionAmount)
