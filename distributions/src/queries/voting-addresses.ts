@@ -36,7 +36,7 @@ export async function votingAddresses(): Promise<VotingData> {
       `https://${network}.infura.io/v3/${process.env.INFURA_API_KEY}`
     )
   );
-  
+  console.log("connect start")
   const org = await connect(
     env.location, 
     'thegraph', 
@@ -45,10 +45,12 @@ export async function votingAddresses(): Promise<VotingData> {
       ethereum: web3.currentProvider
     }
   )
+  console.log("connect finished")
 
   const voting = await connectVoting(org.app('voting'))
+  console.log("connectVoting finished")
   const votes = await voting.votes({ first: 100 })
-
+  console.log("votes finished")
   const voteId = generateVoteId(process.env.VOTE_ID)
 
   const vote = votes.find((v: any) => {
@@ -72,6 +74,7 @@ export async function votingAddresses(): Promise<VotingData> {
     myVoteData.executedBlockNumber = vote.executedAt
     myVoteData.snapshotBlockNumber = vote.snapshotBlock
   }
+  console.log("finalizing return data")
   return myVoteData
 }
 

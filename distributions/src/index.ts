@@ -18,12 +18,14 @@ async function main() {
     abi,
     process.env.CONTRACT_ADDRESS
   );
-
-  const votesAddresses = await votingAddresses().then(() => {
-    console.log("Hello")
-  })
+  console.log("votesAddresses starting")
+  // async function - we neet to await for something to happen
+  const votesAddresses = await votingAddresses()
 
   console.log(votesAddresses)
+ 
+
+  
 
   /*
   try {const votesAddresses = await votingAddresses()
@@ -58,16 +60,17 @@ async function main() {
   //TODO: figure out why we cannot use the snapshotBlockNumber together with other functions
 }
 
-/*
+
 (async () => {
   console.log("Hello")
   await main()
   console.log("Finished")
 })();
-*/
 
+/*
 main().then(() => {
   console.log("All done!")
 }).catch(err => {
   console.log(err)
 });
+*/
