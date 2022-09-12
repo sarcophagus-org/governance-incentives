@@ -6,7 +6,6 @@
   "license": "MIT",
   "scripts": {
     "start": "CHAIN_ID=1 ts-node ./src/index.ts",
-    "voting": "ts-node ./src/queries/voting-addresses.ts",
     "staking": "ts-node ./src/queries/staking-addresses.ts"
   },
   "devDependencies": {
