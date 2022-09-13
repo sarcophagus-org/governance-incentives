@@ -1,9 +1,13 @@
-import { fetchVotingData } from "./queries/voting-data";
+import { fetchVoteData } from "./queries/voting-data";
 const Web3 = require("web3");
 require("dotenv").config();
 const fs = require("fs");
 
 const abi  = JSON.parse(fs.readFileSync("src/abi/sarcoStaking.json"));
+
+if(!process.env.VOTE_ID) {
+  throw Error("Vote ID is required as an env variable")
+}
 
 const web3Instance = () => {
   const network = process.env.ETHEREUM_NETWORK;
@@ -22,7 +26,7 @@ async function main() {
     process.env.CONTRACT_ADDRESS
   );
 
-  const votesAddresses = await fetchVotingData(web3)
+  const votesAddresses = await fetchVoteData(web3, process.env.VOTE_ID)
   const blockNumber = votesAddresses.snapshotBlockNumber
  
   const didVoteAddresses = new Map()
