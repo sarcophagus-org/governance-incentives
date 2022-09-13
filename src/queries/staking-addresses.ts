@@ -1,26 +1,28 @@
 const Web3 = require("web3");
-
-// Loading the Sarco Staking contract ABI
 const fs = require("fs");
 const abi  = JSON.parse(fs.readFileSync("src/abi/sarcoStaking.json"));
 
-
-async function main() {
+export async function stakingAddresses() {
   const network = process.env.ETHEREUM_NETWORK;
   const web3 = new Web3(
     new Web3.providers.HttpProvider(
       `https://${network}.infura.io/v3/${process.env.INFURA_API_KEY}`
     )
   );
-  
+ 
   const contract = new web3.eth.Contract(
     abi,
     process.env.CONTRACT_ADDRESS
   );
 
-  const exampleFunction = await contract.methods.totalStakers().call();
-  console.log(exampleFunction)
+  const onStakeObject = await contract.getPastEvents(
+    "OnStake",
+    {fromBlock: 0}
+    );
+
+  const allOnStakeAddresses = onStakeObject.map(event => event.returnValues).map(onStake => onStake.sender)
+  const onStakeAddresses = [ ...new Set(allOnStakeAddresses) ]
+  return onStakeAddresses
 }
 
 require("dotenv").config();
-main();

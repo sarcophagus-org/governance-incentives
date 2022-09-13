@@ -6,9 +6,7 @@
   "license": "MIT",
   "scripts": {
     "start": "CHAIN_ID=1 ts-node ./src/index.ts",
-    "start:rinkeby": "CHAIN_ID=4 ts-node ./src/index.ts",
-    "staking": "ts-node ./src/staking.ts",
-    "query": "ts-node ./src/queries/index.ts"
+    "staking": "ts-node ./src/queries/staking-addresses.ts"
   },
   "devDependencies": {
     "ts-node": "^8.10.2",
