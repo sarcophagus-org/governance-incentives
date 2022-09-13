@@ -53,7 +53,7 @@ export async function fetchVoteData(web3: any, voteId: string | number): Promise
   if(!vote) {
     throw Error("Unable to retrieve vote: ${voteId}")
   }
-  
+
   const casts = await vote.casts()
 
   return {

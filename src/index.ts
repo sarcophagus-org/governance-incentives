@@ -3,48 +3,47 @@ const Web3 = require("web3");
 require("dotenv").config();
 const fs = require("fs");
 
-const abi  = JSON.parse(fs.readFileSync("src/abi/sarcoStaking.json"));
-
 if(!process.env.VOTE_ID) {
   throw Error("Vote ID is required as an env variable")
 }
 
-const web3Instance = () => {
-  const network = process.env.ETHEREUM_NETWORK;
-  return new Web3(
-    new Web3.providers.HttpProvider(
-      `https://${network}.infura.io/v3/${process.env.INFURA_API_KEY}`
-    )
-  );
-}
+// This is the vote we are distributing rewards for
+const voteId = process.env.VOTE_ID
+
+// TODO: This will come from the collections contract
+const DISTRIBUTION_AMOUNT = 10000
+
+const web3 = new Web3(
+  new Web3.providers.HttpProvider(
+    `https://${process.env.ETHEREUM_NETWORK}.infura.io/v3/${process.env.INFURA_API_KEY}`
+  )
+);
+
+const stakingContractABI  = JSON.parse(fs.readFileSync("src/abi/sarcoStaking.json"));
+const stakingContract = new web3.eth.Contract(
+  stakingContractABI,
+  process.env.CONTRACT_ADDRESS
+);
 
 async function main() {
-  const web3 = web3Instance()
-  
-  const contract = new web3.eth.Contract(
-    abi,
-    process.env.CONTRACT_ADDRESS
-  );
-
-  const votesAddresses = await fetchVoteData(web3, process.env.VOTE_ID)
-  const blockNumber = votesAddresses.snapshotBlockNumber
+  const voteData = await fetchVoteData(web3, voteId)
+  const blockNumber = voteData.snapshotBlockNumber
  
-  const didVoteAddresses = new Map()
+  const didVoteAddresses = new Map<string, number>()
   let totalVoteBalance = 0
-  for (let i = 0; i < votesAddresses.addresses.length; i++) {
-    const votingAddress = votesAddresses.addresses[i]
-    const stakedValueAt = await contract.methods.stakeValueAt(votingAddress,blockNumber).call()
+  for (let i = 0; i < voteData.addresses.length; i++) {
+    const votingAddress = voteData.addresses[i]
+    const stakedValueAt = await stakingContract.methods.stakeValueAt(votingAddress,blockNumber).call()
     totalVoteBalance += +stakedValueAt
     didVoteAddresses.set(votingAddress, stakedValueAt)
   }
-
-  const totalDistributions = 10000
-  const distributionMapping = new Map();
-  for (let i = 0; i < votesAddresses.addresses.length; i++) {
-    const votingAddress = votesAddresses.addresses[i]
+  
+  const distributionMapping = new Map<string, number>();
+  for (let i = 0; i < voteData.addresses.length; i++) {
+    const votingAddress = voteData.addresses[i]
     const stakedValueAt = didVoteAddresses.get(votingAddress)
     const percentage = (stakedValueAt / totalVoteBalance)
-    const distributionAmount = totalDistributions * percentage
+    const distributionAmount = DISTRIBUTION_AMOUNT * percentage
     distributionMapping.set(votingAddress, distributionAmount)
   }
   console.log(distributionMapping)
