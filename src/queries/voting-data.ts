@@ -1,11 +1,6 @@
 import { connect } from '@aragon/connect'
-import connectVoting, { Vote } from '@aragon/connect-voting'
-const Web3 = require("web3");
+import connectVoting from '@aragon/connect-voting'
 require('dotenv').config();
-
-
-const BLUE = '\x1b[36m'
-const RESET = '\x1b[0m'
 
 if(!process.env.VOTE_ID) {
   throw Error("Vote ID is required as an env variable")
@@ -29,14 +24,8 @@ function generateVoteId(id: string): any {
 }
 
 
-export async function votingAddresses(): Promise<VotingData> {
-  const network = process.env.ETHEREUM_NETWORK;
-  const web3 = new Web3(
-    new Web3.providers.HttpProvider(
-      `https://${network}.infura.io/v3/${process.env.INFURA_API_KEY}`
-    )
-  );
-
+export async function fetchVotingData(web3: any): Promise<VotingData> {
+  // Connect to aragon subgraph to retrieve voting data
   const org = await connect(
     env.location, 
     'thegraph', 
