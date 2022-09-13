@@ -53,20 +53,12 @@ export async function fetchVoteData(web3: any, voteId: string | number): Promise
   if(!vote) {
     throw Error("Unable to retrieve vote: ${voteId}")
   }
-
+  
   const casts = await vote.casts()
 
-  const voteWithCast = [{...vote, casts}]
-
-  const myVoteData = {} as VotingData;
-  
-  for (const vote of voteWithCast) {
-    myVoteData.addresses = vote.casts.map(cast => {
-      return cast.voter.address 
-    })
-    myVoteData.executedBlockNumber = vote.executedAt
-    myVoteData.snapshotBlockNumber = vote.snapshotBlock
-  }
-
-  return myVoteData
+  return {
+    addresses: casts.map(cast => cast.voter.address),
+    executedBlockNumber: vote.executedAt,
+    snapshotBlockNumber: vote.snapshotBlock
+  } as VotingData
 }
