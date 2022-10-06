@@ -38,19 +38,16 @@ async function main() {
     const votingAddress = voteData.addresses[i]
     const stakedValueAt: BigNumber = await stakingContract.methods.stakeValueAt(votingAddress,blockNumber).call()
     totalVoteBalance = totalVoteBalance.add(stakedValueAt)
-    didVoteAddresses.set(votingAddress, stakedValueAt)
+    didVoteAddresses.set(votingAddress, BigNumber.from(stakedValueAt))
   }
   
-  console.log("didVoteAddresses:",didVoteAddresses)
-  console.log("totalVoteBalance:",totalVoteBalance.toString())
-
   const distributionMapping = new Map<string, BigNumber>();
   for (let i = 0; i < voteData.addresses.length; i++) {
     const votingAddress = voteData.addresses[i]
     const stakedValueAt = BigNumber.from(didVoteAddresses.get(votingAddress))
-    const percentage = stakedValueAt.mul(100000000000).div(totalVoteBalance)
-    const distributionAmount = DISTRIBUTION_AMOUNT.mul(percentage).div(100000000000)
-    distributionMapping.set(votingAddress, distributionAmount)
+    const percentage = stakedValueAt.mul(100000000000000).div(totalVoteBalance)
+    const distributionAmount = DISTRIBUTION_AMOUNT.mul(percentage).div(100000000000000)
+    distributionMapping.set(votingAddress, distributionAmount )
   }
   console.log("Distribution Mapping:",distributionMapping)
 }
