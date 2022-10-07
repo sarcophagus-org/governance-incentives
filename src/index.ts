@@ -2,6 +2,7 @@ import { fetchVoteData } from "./queries/voting-data";
 import { BigNumber, ethers } from "ethers";
 import chai from "chai";
 import { expect } from "chai";
+import { describe } from "node:test";
 const Web3 = require("web3");
 require("dotenv").config();
 const fs = require("fs");
@@ -81,10 +82,12 @@ async function main() {
     ethers.utils.formatEther(sum(distributionMapping))
   );
 
-  expect(+sum(distributionMapping)).to.be.closeTo(
-    +DISTRIBUTION_AMOUNT,
-    1000000
-  );
+  describe("Sum of voter rewards equal initial distribution amount", function() {
+    expect(+sum(distributionMapping)).to.be.closeTo(
+      +DISTRIBUTION_AMOUNT,
+      1000000
+    );
+  });
 }
 
 (async () => {
