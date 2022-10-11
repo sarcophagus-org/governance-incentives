@@ -23,6 +23,21 @@
     "@types/node": "^18.7.14",
     "axios": "^0.27.2",
     "dotenv": "^16.0.2",
-    "web3": "^1.7.5"
+    "web3": "^1.7.5",
+    "@typescript-eslint/eslint-plugin": "^5.39.0",
+    "@typescript-eslint/parser": "^5.39.0",
+    "eslint": "^8.24.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-react": "^7.31.8",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-airbnb-typescript": "^17.0.0",
+    "eslint-plugin-jsx-a11y": "^6.5.1",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-react-hooks": "^4.5.0",
+    "jest-react": "^0.14.0",
+    "react": "^18.2.0",
+    "ethers": "^5.7.1",
+    "react-scripts": "^5.0.1",
+    "ts-node": "^10.9.1"
   }
 }
