@@ -2,6 +2,9 @@ const Web3 = require('web3');
 const fs = require('fs');
 const abi = JSON.parse(fs.readFileSync('src/abi/sarcoStaking.json'));
 
+/**
+ * Returns all addresses that have historically staked Sarco
+ */
 export async function stakingAddresses() {
   const network = process.env.ETHEREUM_NETWORK;
   const web3 = new Web3(

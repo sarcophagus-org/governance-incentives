@@ -15,10 +15,10 @@ if (!process.env.VOTE_ID) {
 const voteId = process.env.VOTE_ID;
 // TODO: This will come from the collections contract
 const DISTRIBUTION_AMOUNT = ethers.utils.parseEther('100');
-// variable used to achieve a good approximation in the distribution of rewards calculation
+// variable used to achieve a good decimal approximation in the distribution of rewards calculation
 const factor = DISTRIBUTION_AMOUNT.div(100000);
 
-// fetch SARCO staking contract
+// fetch SARCO staking contract (SarcoVR)
 const web3 = new Web3(
   new Web3.providers.HttpProvider(
     `https://${process.env.ETHEREUM_NETWORK}.infura.io/v3/${process.env.INFURA_API_KEY}`
@@ -28,20 +28,20 @@ const stakingContractABI = JSON.parse(fs.readFileSync('src/abi/sarcoStaking.json
 const stakingContract = new web3.eth.Contract(stakingContractABI, process.env.CONTRACT_ADDRESS);
 
 // helper function that sums the BN values of a mapping - used to check the sum of rewards equals the initial amount distributed
-function sum(distribution: Map<string, BigNumber>): BigNumber {
-  let SUM = zero;
+function getSum(distribution: Map<string, BigNumber>): BigNumber {
+  let sum = zero;
   for (let i of distribution.keys()) {
     let value: BigNumber = distribution.get(i);
-    SUM = SUM.add(value);
+    sum = sum.add(value);
   }
-  return SUM;
+  return sum;
 }
 
-// helper function getting the total SARCOVR held by voters at voteId to be used to compute the proportions of rewards to be distributed
-async function getTotalVoteBalance(_web3: any, _voteId: string | number): Promise<BigNumber> {
+// helper function getting the total SarcoVR held by voters at voteId to be used to compute the proportions of rewards to be distributed
+async function getTotalVoteBalance(_provider: any, _voteId: string | number): Promise<BigNumber> {
   // fetch voting data to get voter addresses
-  const voteData = await fetchVoteData(_web3, _voteId);
-  // fetch snapshot blockNumber of proposal vote
+  const voteData = await fetchVoteData(_provider, _voteId);
+  // fetch snapshot blockNumber of DAO proposal vote
   const blockNumber = voteData.snapshotBlockNumber;
 
   let totalVoteBalance: BigNumber = zero;
@@ -60,10 +60,10 @@ async function main() {
   const voteData = await fetchVoteData(web3, voteId);
   // fetch snapshot blockNumber of proposal vote
   const blockNumber = voteData.snapshotBlockNumber;
-
+  // fetch total amount of SarcoVR held by voters at the given voteId
   const totalVoteBalance = await getTotalVoteBalance(web3, voteId);
 
-  // mapping of voters' addresses and their rewards to be distributed by the collection contract
+  // construct mapping of voters' addresses and rewards to be distributed by the collection contract
   const distributionMapping = new Map<string, BigNumber>();
   for (let i = 0; i < voteData.addresses.length; i++) {
     const votingAddress = voteData.addresses[i];
@@ -79,10 +79,14 @@ async function main() {
   console.log('Distribution Mapping:', distributionMapping);
 
   console.log('Distribution amount:', ethers.utils.formatEther(DISTRIBUTION_AMOUNT));
-  console.log('Sum of voters distributions: ', ethers.utils.formatEther(sum(distributionMapping)));
+  console.log(
+    'Sum of voters distributions: ',
+    ethers.utils.formatEther(getSum(distributionMapping))
+  );
 
+  // test to verify that sum distributed is equal to initial amount
   describe('Sum of voter rewards equal initial distribution amount', () => {
-    expect(+sum(distributionMapping)).to.be.closeTo(Number(DISTRIBUTION_AMOUNT), 1000000);
+    expect(+getSum(distributionMapping)).to.be.closeTo(Number(DISTRIBUTION_AMOUNT), 1000000);
   });
 }
 

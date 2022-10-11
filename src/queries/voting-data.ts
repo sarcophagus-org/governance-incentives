@@ -29,6 +29,12 @@ function formatVoteId(
   return aragonVoteId;
 }
 
+/**
+ * Gets data of single vote  voting data to get voter addresses
+ *
+ * @param web3 - provider
+ * @param voteId - vote id we are distributing rewards for
+ */
 export async function fetchVoteData(web3: any, voteId: string | number): Promise<VotingData> {
   const voteIdFormatted = formatVoteId(voteId);
 
