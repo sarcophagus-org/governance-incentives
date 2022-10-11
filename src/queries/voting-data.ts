@@ -10,7 +10,7 @@ interface VotingData {
 
 const aragonEnv = {
   network: parseInt(process.env.CHAIN_ID, 10),
-  location: process.env.ORGANIZATION ?? 'sarcophagus.aragonid.eth'
+  location: process.env.ORGANIZATION ?? 'sarcophagus.aragonid.eth',
 };
 
 /**
@@ -30,7 +30,7 @@ function formatVoteId(
 }
 
 /**
- * Gets data of single vote  voting data to get voter addresses
+ * Retrieves data of voteId
  *
  * @param web3 - provider
  * @param voteId - vote id we are distributing rewards for
@@ -41,7 +41,7 @@ export async function fetchVoteData(web3: any, voteId: string | number): Promise
   // Connect to aragon subgraph to retrieve voting data
   const org = await connect(aragonEnv.location, 'thegraph', {
     network: aragonEnv.network,
-    ethereum: web3.currentProvider
+    ethereum: web3.currentProvider,
   });
 
   // Grab the first 100 votes
@@ -64,6 +64,6 @@ export async function fetchVoteData(web3: any, voteId: string | number): Promise
   return {
     addresses: casts.map(cast => cast.voter.address),
     executedBlockNumber: vote.executedAt,
-    snapshotBlockNumber: vote.snapshotBlock
+    snapshotBlockNumber: vote.snapshotBlock,
   } as VotingData;
 }
