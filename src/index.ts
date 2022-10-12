@@ -10,15 +10,14 @@ const zero = ethers.constants.Zero;
 if (!process.env.VOTE_ID) {
   throw Error('Vote ID is required as an env variable');
 }
-
-// Vote we are distributing rewards for
+// id of the vote to query
 const voteId: string = process.env.VOTE_ID;
 // TODO: This will come from the collections contract
 const DISTRIBUTION_AMOUNT = ethers.utils.parseEther('100');
-// variable used to achieve a good decimal approximation in the distribution of rewards calculation
-const FACTOR = DISTRIBUTION_AMOUNT.div(100000);
+// helper variable used to achieve a good decimal approximation in the rewards distribution calculation
+const factor = DISTRIBUTION_AMOUNT.div(100000);
 
-// fetch SARCO staking contract (SarcoVR)
+// fetch SARCO staking contract that gives owners voting rights (SarcoVR)
 const web3 = new Web3(
   new Web3.providers.HttpProvider(
     `https://${process.env.ETHEREUM_NETWORK}.infura.io/v3/${process.env.INFURA_API_KEY}`
@@ -37,11 +36,12 @@ function getSum(distribution: Map<string, BigNumber>): BigNumber {
   return sum;
 }
 
-// helper function getting the total SarcoVR held by voters at voteId: used to compute the proportions of rewards for distribution
+// helper function getting the total SarcoVR held by voters for a single voteId
+// used to compute the proportions of rewards to distribute
 async function getTotalVoteBalance(_provider: any, _voteId: string | number): Promise<BigNumber> {
-  // voting data to get voters addresses for vote number _voteId
+  // helper function to query voting data
   const voteData = await fetchVoteData(_provider, _voteId);
-  // snapshot blockNumber of DAO proposal vote
+  // snapshot blockNumber of vote
   const blockNumber = voteData.snapshotBlockNumber;
 
   let totalVoteBalance: BigNumber = zero;
@@ -63,15 +63,15 @@ async function main() {
   // fetch total amount of SarcoVR held by voters for a given voteId
   const totalVoteBalance = await getTotalVoteBalance(web3, voteId);
 
-  // construct mapping of voters' addresses and rewards to be allocated by the collection contract
+  // construct mapping of voters' addresses and rewards to be allocated
   const distributionMapping = new Map<string, BigNumber>();
   for (let i = 0; i < voteData.addresses.length; i++) {
     const votingAddress = voteData.addresses[i];
     const stakedValueAt: BigNumber = await stakingContract.methods
       .stakeValueAt(votingAddress, blockNumber)
       .call();
-    const percentage = BigNumber.from(stakedValueAt).div(totalVoteBalance).mul(FACTOR);
-    const distributionAmount = DISTRIBUTION_AMOUNT.mul(percentage).div(FACTOR);
+    const percentage = BigNumber.from(stakedValueAt).mul(factor).div(totalVoteBalance);
+    const distributionAmount = DISTRIBUTION_AMOUNT.div(factor).mul(percentage);
     distributionMapping.set(votingAddress, distributionAmount);
   }
   console.log('Distribution Mapping:', distributionMapping);

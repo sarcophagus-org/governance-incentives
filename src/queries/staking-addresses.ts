@@ -4,6 +4,7 @@ const abi = JSON.parse(fs.readFileSync('src/abi/sarcoStaking.json'));
 
 /**
  * Returns all addresses that have historically staked Sarco
+ * by querying the blockchain for emission of 'OnStake' event
  */
 export async function stakingAddresses() {
   const network = process.env.ETHEREUM_NETWORK;

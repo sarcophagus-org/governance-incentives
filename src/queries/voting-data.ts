@@ -30,10 +30,10 @@ function formatVoteId(
 }
 
 /**
- * Retrieves data of voteId
+ * Retrieves details of vote including address of voters and timing of execution
  *
- * @param web3 - provider
- * @param voteId - vote id we are distributing rewards for
+ * @param web3 - blockchain provider
+ * @param voteId - id of the vote to query (I.E. 21)
  */
 export async function fetchVoteData(web3: any, voteId: string | number): Promise<VotingData> {
   const voteIdFormatted = formatVoteId(voteId);
