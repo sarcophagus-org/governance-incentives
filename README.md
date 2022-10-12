@@ -30,4 +30,4 @@ Also Windows users will need to add .npmrc file with the contents script-shell=p
 
 Finally, copy `.env.example` into `.env` in root directory and update your environment variables.
 
-In `.env` set the VOTE_ID string to the DAO vote number you want to execute the script on.
+In `.env` set the VOTE_ID string to the Sarco DAO vote number you want to execute the script on.

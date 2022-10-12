@@ -12,12 +12,12 @@ if (!process.env.VOTE_ID) {
 }
 // id of the vote to query
 const voteId: string = process.env.VOTE_ID;
-// TODO: This will come from the collections contract
+// TODO: This will come from the collection contract
 const DISTRIBUTION_AMOUNT = ethers.utils.parseEther('100');
 // helper variable used to achieve a good decimal approximation in the rewards distribution calculation
 const factor = DISTRIBUTION_AMOUNT.div(100000);
 
-// fetch SARCO staking contract that gives owners voting rights (SarcoVR)
+// fetch SARCO staking contract that gives stakers voting rights tokens (SarcoVR)
 const web3 = new Web3(
   new Web3.providers.HttpProvider(
     `https://${process.env.ETHEREUM_NETWORK}.infura.io/v3/${process.env.INFURA_API_KEY}`
@@ -36,7 +36,7 @@ function getSum(distribution: Map<string, BigNumber>): BigNumber {
   return sum;
 }
 
-// helper function getting the total SarcoVR held by voters for a single voteId
+// helper function fetching the total SarcoVR held by voters for a single voteId
 // used to compute the proportions of rewards to distribute
 async function getTotalVoteBalance(_provider: any, _voteId: string | number): Promise<BigNumber> {
   // helper function to query voting data
@@ -56,7 +56,6 @@ async function getTotalVoteBalance(_provider: any, _voteId: string | number): Pr
 }
 
 async function main() {
-  // voting data to get voters addresses for vote number _voteId
   const voteData = await fetchVoteData(web3, voteId);
   // snapshot blockNumber of DAO proposal vote
   const blockNumber = voteData.snapshotBlockNumber;
@@ -70,8 +69,11 @@ async function main() {
     const stakedValueAt: BigNumber = await stakingContract.methods
       .stakeValueAt(votingAddress, blockNumber)
       .call();
+
+    // percentage and distributionAmount calculations include 'factor' to enable a good decimal approximation in the computation
     const percentage = BigNumber.from(stakedValueAt).mul(factor).div(totalVoteBalance);
     const distributionAmount = DISTRIBUTION_AMOUNT.div(factor).mul(percentage);
+
     distributionMapping.set(votingAddress, distributionAmount);
   }
   console.log('Distribution Mapping:', distributionMapping);
