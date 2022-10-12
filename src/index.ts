@@ -38,21 +38,21 @@ function getSum(distribution: Map<string, BigNumber>): BigNumber {
 
 // helper function fetching the total SarcoVR held by voters for a single voteId
 // used to compute the proportions of rewards to distribute
-async function getTotalVoteBalance(_provider: any, _voteId: string | number): Promise<BigNumber> {
+async function getTotalVotersBalance(_provider: any, _voteId: string | number): Promise<BigNumber> {
   // helper function to query voting data
   const voteData = await fetchVoteData(_provider, _voteId);
   // snapshot blockNumber of vote
   const blockNumber = voteData.snapshotBlockNumber;
 
-  let totalVoteBalance: BigNumber = zero;
+  let totalVotersBalance: BigNumber = zero;
   for (let i = 0; i < voteData.addresses.length; i++) {
     const votingAddress = voteData.addresses[i];
     const stakedValueAt: BigNumber = await stakingContract.methods
       .stakeValueAt(votingAddress, blockNumber)
       .call();
-    totalVoteBalance = totalVoteBalance.add(stakedValueAt);
+    totalVotersBalance = totalVotersBalance.add(stakedValueAt);
   }
-  return totalVoteBalance;
+  return totalVotersBalance;
 }
 
 async function main() {
@@ -60,7 +60,7 @@ async function main() {
   // snapshot blockNumber of DAO proposal vote
   const blockNumber = voteData.snapshotBlockNumber;
   // fetch total amount of SarcoVR held by voters for a given voteId
-  const totalVoteBalance = await getTotalVoteBalance(web3, voteId);
+  const totalVoteBalance = await getTotalVotersBalance(web3, voteId);
 
   // construct mapping of voters' addresses and rewards to be allocated
   const distributionMapping = new Map<string, BigNumber>();
