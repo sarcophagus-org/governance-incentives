@@ -7,6 +7,14 @@ const Web3 = require('web3');
 const fs = require('fs');
 const zero = ethers.constants.Zero;
 
+// we want to pass by an array of this reward struct
+interface Reward {
+  _address: string;
+  _amount: BigNumber;
+}
+
+type Rewards = Array<Reward>;
+
 if (!process.env.VOTE_ID) {
   throw Error('Vote ID is required as an env variable');
 }
@@ -27,11 +35,10 @@ const stakingContractABI = JSON.parse(fs.readFileSync('src/abi/sarcoStaking.json
 const stakingContract = new web3.eth.Contract(stakingContractABI, process.env.CONTRACT_ADDRESS);
 
 // helper function that sums the BN values of a mapping: used to check the sum of rewards equals the initial amount distributed
-function getSum(distribution: Map<string, BigNumber>): BigNumber {
+function getSum(distributions: Rewards): BigNumber {
   let sum = zero;
-  for (let i of distribution.keys()) {
-    let value: BigNumber = distribution.get(i);
-    sum = sum.add(value);
+  for (let distribution of distributions) {
+    sum = sum.add(distribution._amount);
   }
   return sum;
 }
@@ -63,7 +70,7 @@ async function main() {
   const totalVoteBalance = await getTotalVotersBalance(web3, voteId);
 
   // construct mapping of voters' addresses and rewards to be allocated
-  const distributionMapping = new Map<string, BigNumber>();
+  const distributionObject: Rewards = [];
   for (let i = 0; i < voteData.addresses.length; i++) {
     const votingAddress = voteData.addresses[i];
     const stakedValueAt: BigNumber = await stakingContract.methods
@@ -73,20 +80,21 @@ async function main() {
     // percentage and distributionAmount calculations include 'factor' to enable a good decimal approximation in the computation
     const percentage = BigNumber.from(stakedValueAt).mul(factor).div(totalVoteBalance);
     const distributionAmount = DISTRIBUTION_AMOUNT.div(factor).mul(percentage);
-
-    distributionMapping.set(votingAddress, distributionAmount);
+    console.log(distributionObject);
+    distributionObject[i]._address = votingAddress;
+    distributionObject[i]._amount = distributionAmount;
   }
-  console.log('Distribution Mapping:', distributionMapping);
+  console.log('Distribution Object:', distributionObject);
 
   console.log('Distribution amount set initially:', ethers.utils.formatEther(DISTRIBUTION_AMOUNT));
   console.log(
     'Sum of voters rewards after distributions calculations: ',
-    ethers.utils.formatEther(getSum(distributionMapping))
+    ethers.utils.formatEther(getSum(distributionObject))
   );
 
   // test to verify that sum distributed is equal to initial amount
   describe('Sum of voter rewards equal initial distribution amount', () => {
-    expect(+getSum(distributionMapping)).to.be.closeTo(Number(DISTRIBUTION_AMOUNT), 1000000);
+    expect(+getSum(distributionObject)).to.be.closeTo(Number(DISTRIBUTION_AMOUNT), 1000000);
   });
 }
 
