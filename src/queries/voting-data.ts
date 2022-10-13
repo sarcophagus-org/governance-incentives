@@ -1,8 +1,10 @@
 import { connect } from '@aragon/connect';
-import connectVoting from '@aragon/connect-voting';
+import connectVoting, { Voting } from '@aragon/connect-voting';
+import Web3 from 'web3';
+
 require('dotenv').config();
 
-interface VotingData {
+export interface VotingData {
   addresses: string[];
   executedBlockNumber: number;
   snapshotBlockNumber: number;
@@ -22,8 +24,8 @@ const aragonEnv = {
  */
 function formatVoteId(
   id: string | number,
-  votingContractAddress: string = '0xf483c1f7858dd19915d0689d26cb3487fc90b640'
-): any {
+  votingContractAddress: string = process.env.VOTING_CONTRACT_ADDRESS
+): string {
   const aragonVoteIdPrefix = `appAddress:${votingContractAddress}-vote:`;
   const aragonVoteId = aragonVoteIdPrefix + '0x' + Number(Number(id).toString(16)).toString(16);
   return aragonVoteId;
@@ -35,18 +37,18 @@ function formatVoteId(
  * @param web3 - blockchain provider
  * @param voteId - id of the vote to query (I.E. 21)
  */
-export async function fetchVoteData(web3: any, voteId: string | number): Promise<VotingData> {
+export async function fetchVoteData(web3: Web3, voteId: string | number): Promise<VotingData> {
   const voteIdFormatted = formatVoteId(voteId);
 
   // Connect to aragon subgraph to retrieve voting data
   const org = await connect(aragonEnv.location, 'thegraph', {
     network: aragonEnv.network,
-    ethereum: web3.currentProvider,
+    // ethereum: web3.currentProvider,
   });
 
   // Grab the first 100 votes
   // TODO: will need to consider pagination as vote count exceeds 100
-  const voting = await connectVoting(org.app('voting'));
+  const voting: Voting = await connectVoting(org.app('voting'));
   const votes = await voting.votes({ first: 100 });
 
   // Filter the votes to only the provided vote ID
@@ -63,7 +65,7 @@ export async function fetchVoteData(web3: any, voteId: string | number): Promise
 
   return {
     addresses: casts.map(cast => cast.voter.address),
-    executedBlockNumber: vote.executedAt,
-    snapshotBlockNumber: vote.snapshotBlock,
-  } as VotingData;
+    executedBlockNumber: parseInt(vote.executedAt),
+    snapshotBlockNumber: parseInt(vote.snapshotBlock),
+  };
 }

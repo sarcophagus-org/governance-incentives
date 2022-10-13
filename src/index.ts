@@ -1,10 +1,8 @@
-import { fetchVoteData } from './queries/voting-data';
+import { fetchVoteData, VotingData } from './queries/voting-data';
 import { BigNumber, ethers } from 'ethers';
-import { expect } from 'chai';
-import { describe } from 'node:test';
+import Web3 from 'web3';
+import * as fs from 'fs';
 require('dotenv').config();
-const Web3 = require('web3');
-const fs = require('fs');
 const zero = ethers.constants.Zero;
 
 if (!process.env.VOTE_ID) {
@@ -13,7 +11,7 @@ if (!process.env.VOTE_ID) {
 // id of the vote to query
 const voteId: string = process.env.VOTE_ID;
 // TODO: This will come from the collection contract
-const DISTRIBUTION_AMOUNT = ethers.utils.parseEther('100');
+export const DISTRIBUTION_AMOUNT = ethers.utils.parseEther('100');
 // helper variable used to achieve a good decimal approximation in the rewards distribution calculation
 const factor = DISTRIBUTION_AMOUNT.div(100000);
 
@@ -23,11 +21,11 @@ const web3 = new Web3(
     `https://${process.env.ETHEREUM_NETWORK}.infura.io/v3/${process.env.INFURA_API_KEY}`
   )
 );
-const stakingContractABI = JSON.parse(fs.readFileSync('src/abi/sarcoStaking.json'));
+const stakingContractABI = JSON.parse(fs.readFileSync('src/abi/sarcoStaking.json', 'utf-8'));
 const stakingContract = new web3.eth.Contract(stakingContractABI, process.env.CONTRACT_ADDRESS);
 
 // helper function that sums the BN values of a mapping: used to check the sum of rewards equals the initial amount distributed
-function getSum(distribution: Map<string, BigNumber>): BigNumber {
+export function getSum(distribution: Map<string, BigNumber>): BigNumber {
   let sum = zero;
   for (let i of distribution.keys()) {
     let value: BigNumber = distribution.get(i);
@@ -38,29 +36,29 @@ function getSum(distribution: Map<string, BigNumber>): BigNumber {
 
 // helper function fetching the total SarcoVR held by voters for a single voteId
 // used to compute the proportions of rewards to distribute
-async function getTotalVotersBalance(_provider: any, _voteId: string | number): Promise<BigNumber> {
-  // helper function to query voting data
-  const voteData = await fetchVoteData(_provider, _voteId);
+async function getTotalVotersBalance(voteData: VotingData): Promise<BigNumber> {
   // snapshot blockNumber of vote
   const blockNumber = voteData.snapshotBlockNumber;
 
-  let totalVotersBalance: BigNumber = zero;
-  for (let i = 0; i < voteData.addresses.length; i++) {
-    const votingAddress = voteData.addresses[i];
-    const stakedValueAt: BigNumber = await stakingContract.methods
-      .stakeValueAt(votingAddress, blockNumber)
-      .call();
-    totalVotersBalance = totalVotersBalance.add(stakedValueAt);
-  }
+  // Retrieve each voter balance synchronously
+  const votersBalances = await Promise.all(
+    voteData.addresses.map(address =>
+      stakingContract.methods.stakeValueAt(address, blockNumber).call()
+    )
+  );
+
+  // Sum the voter balances
+  const totalVotersBalance = votersBalances.reduce((a, b) => a.add(b), zero);
+
   return totalVotersBalance;
 }
 
-async function main() {
+export async function main(): Promise<Map<string, BigNumber>> {
   const voteData = await fetchVoteData(web3, voteId);
   // snapshot blockNumber of DAO proposal vote
   const blockNumber = voteData.snapshotBlockNumber;
   // fetch total amount of SarcoVR held by voters for a given voteId
-  const totalVoteBalance = await getTotalVotersBalance(web3, voteId);
+  const totalVoteBalance = await getTotalVotersBalance(voteData);
 
   // construct mapping of voters' addresses and rewards to be allocated
   const distributionMapping = new Map<string, BigNumber>();
@@ -77,17 +75,13 @@ async function main() {
     distributionMapping.set(votingAddress, distributionAmount);
   }
   console.log('Distribution Mapping:', distributionMapping);
-
   console.log('Distribution amount set initially:', ethers.utils.formatEther(DISTRIBUTION_AMOUNT));
   console.log(
     'Sum of voters rewards after distributions calculations: ',
     ethers.utils.formatEther(getSum(distributionMapping))
   );
 
-  // test to verify that sum distributed is equal to initial amount
-  describe('Sum of voter rewards equal initial distribution amount', () => {
-    expect(+getSum(distributionMapping)).to.be.closeTo(Number(DISTRIBUTION_AMOUNT), 1000000);
-  });
+  return distributionMapping;
 }
 
 (async () => {
