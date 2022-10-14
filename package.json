@@ -7,7 +7,7 @@
   "scripts": {
     "start": "CHAIN_ID=1 ts-node ./src/index.ts",
     "staking": "ts-node ./src/queries/staking-addresses.ts",
-    "test": "mocha"
+    "test": "npx mocha --require ts-node/register test/*.spec.ts --timeout 10000"
   },
   "devDependencies": {
     "@types/chai": "^4.3.3",

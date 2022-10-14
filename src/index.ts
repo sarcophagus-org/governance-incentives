@@ -34,7 +34,7 @@ export function getSum(distribution: Map<string, BigNumber>): BigNumber {
   return sum;
 }
 
-// helper function fetching the total SarcoVR held by voters for a single voteId
+// helper function fetching the total SarcoVR held by voters for a certain vote
 // used to compute the proportions of rewards to distribute
 async function getTotalVotersBalance(voteData: VotingData): Promise<BigNumber> {
   // snapshot blockNumber of vote
@@ -74,12 +74,6 @@ export async function main(): Promise<Map<string, BigNumber>> {
 
     distributionMapping.set(votingAddress, distributionAmount);
   }
-  console.log('Distribution Mapping:', distributionMapping);
-  console.log('Distribution amount set initially:', ethers.utils.formatEther(DISTRIBUTION_AMOUNT));
-  console.log(
-    'Sum of voters rewards after distributions calculations: ',
-    ethers.utils.formatEther(getSum(distributionMapping))
-  );
 
   return distributionMapping;
 }
