@@ -3,7 +3,7 @@ import { BigNumber, ethers } from 'ethers';
 import Web3 from 'web3';
 import * as fs from 'fs';
 require('dotenv').config();
-const zero = ethers.constants.Zero;
+export const zero = ethers.constants.Zero;
 
 if (!process.env.VOTE_ID) {
   throw Error('Vote ID is required as an env variable');
@@ -24,16 +24,6 @@ const web3 = new Web3(
 const stakingContractABI = JSON.parse(fs.readFileSync('src/abi/sarcoStaking.json', 'utf-8'));
 const stakingContract = new web3.eth.Contract(stakingContractABI, process.env.CONTRACT_ADDRESS);
 
-// helper function that sums the BN values of a mapping: used to check the sum of rewards equals the initial amount distributed
-export function getSum(distribution: Map<string, BigNumber>): BigNumber {
-  let sum = zero;
-  for (let i of distribution.keys()) {
-    let value: BigNumber = distribution.get(i);
-    sum = sum.add(value);
-  }
-  return sum;
-}
-
 // helper function fetching the total SarcoVR held by voters for a certain vote
 // used to compute the proportions of rewards to distribute
 async function getTotalVotersBalance(voteData: VotingData): Promise<BigNumber> {
@@ -46,7 +36,6 @@ async function getTotalVotersBalance(voteData: VotingData): Promise<BigNumber> {
       stakingContract.methods.stakeValueAt(address, blockNumber).call()
     )
   );
-
   // Sum the voter balances
   const totalVotersBalance = votersBalances.reduce((a, b) => a.add(b), zero);
 
