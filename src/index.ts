@@ -1,7 +1,5 @@
 import { fetchVoteData } from './queries/voting-data';
 import { BigNumber, ethers } from 'ethers';
-import { expect } from 'chai';
-import { describe } from 'node:test';
 require('dotenv').config();
 const Web3 = require('web3');
 const fs = require('fs');
@@ -76,14 +74,13 @@ async function main() {
     const stakedValueAt: BigNumber = await stakingContract.methods
       .stakeValueAt(votingAddress, blockNumber)
       .call();
-
     // percentage and distributionAmount calculations include 'factor' to enable a good decimal approximation in the computation
     const percentage = BigNumber.from(stakedValueAt).mul(factor).div(totalVoteBalance);
     const distributionAmount = DISTRIBUTION_AMOUNT.div(factor).mul(percentage);
-    console.log(distributionObject);
-    distributionObject[i]._address = votingAddress;
-    distributionObject[i]._amount = distributionAmount;
+
+    distributionObject[i] = { _address: votingAddress, _amount: distributionAmount };
   }
+
   console.log('Distribution Object:', distributionObject);
 
   console.log('Distribution amount set initially:', ethers.utils.formatEther(DISTRIBUTION_AMOUNT));
@@ -91,11 +88,6 @@ async function main() {
     'Sum of voters rewards after distributions calculations: ',
     ethers.utils.formatEther(getSum(distributionObject))
   );
-
-  // test to verify that sum distributed is equal to initial amount
-  describe('Sum of voter rewards equal initial distribution amount', () => {
-    expect(+getSum(distributionObject)).to.be.closeTo(Number(DISTRIBUTION_AMOUNT), 1000000);
-  });
 }
 
 (async () => {
