@@ -1,12 +1,9 @@
 import { ethers } from 'ethers';
-export { Collection__factory } from '../typechain-types/factories/contracts//Collection__factory';
 
-export interface Web3Interface {
-  networkName: string;
-  ethWallet: ethers.Wallet;
-  encryptionWallet: ethers.Wallet;
-  signer: ethers.Signer;
-}
+import type { Collection } from '../typechain-types/contracts/Collection';
+import { Collection__factory } from './typechain-types/factories/contracts/Collection__factory';
+import type { Sarco } from './typechain-types/contracts/mocks/Sarco';
+import { Sarco__factory } from './typechain-types//factories/contracts/mocks/Sarco__factory';
 
 export const getWeb3Interface = async () => {
   const rpcProvider = new ethers.providers.JsonRpcProvider(process.env.PROVIDER_URL);
