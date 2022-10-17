@@ -1,29 +1,36 @@
 import { ethers } from 'hardhat';
 import type { Collection } from '../typechain-types/contracts/Collection';
 import { Collection__factory } from '../typechain-types/factories/contracts/Collection__factory';
-import type { Sarco } from '../typechain-types/contracts/mocks/Sarco';
-import { Sarco__factory } from '../typechain-types/factories/contracts/mocks/Sarco__factory';
 require('dotenv').config();
+import { main } from '../src/index';
 
-async function main() {
+// change script name and function name
+async function hello() {
   const rpcProvider = new ethers.providers.JsonRpcProvider(process.env.PROVIDER_URL);
   const ethWallet = ethers.Wallet.createRandom();
-  const encryptionWallet = ethers.Wallet.createRandom();
+  // const encryptionWallet = ethers.Wallet.createRandom();
   const signer = rpcProvider.getSigner(ethWallet.address);
-  console.log('signer: ', signer);
 
-  console.log('collection contract addy:', process.env.COLLECTION_CONTRACT_ADDRESS);
+  console.log('collection contract address:', process.env.COLLECTION_CONTRACT_ADDRESS);
 
-  // TODO: how to find the collection contract address?
-  const Collection: Collection = Collection__factory.connect(
+  // TODO: how to automatically deploy the contract on hardhat?
+  const collection: Collection = Collection__factory.connect(
     process.env.COLLECTION_CONTRACT_ADDRESS!,
     signer
   );
 
-  console.log(Collection);
+  console.log(await collection.unallocatedRewards());
+  const scriptInput = await collection.unallocatedRewards();
+  // import script
+  const distributionObject = await main(scriptInput);
+
+  console.log(account[0]);
+
+  // onlyOwner
+  // await collection.allocateRewards(distributionObject);
 }
 
-main()
+hello()
   .then(() => process.exit(0))
   .catch(error => {
     console.error(error);

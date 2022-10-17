@@ -19,9 +19,9 @@ if (!process.env.VOTE_ID) {
 // id of the vote to query
 const voteId: string = process.env.VOTE_ID;
 // TODO: This will come from the collection contract
-const DISTRIBUTION_AMOUNT = ethers.utils.parseEther('100');
+// const DISTRIBUTION_AMOUNT = ethers.utils.parseEther('100');
 // helper variable used to achieve a good decimal approximation in the rewards distribution calculation
-const factor = DISTRIBUTION_AMOUNT.div(100000);
+// const factor = DISTRIBUTION_AMOUNT.div(100000);
 
 // fetch SARCO staking contract that gives stakers voting rights tokens (SarcoVR)
 const web3 = new Web3(
@@ -60,7 +60,7 @@ async function getTotalVotersBalance(_provider: any, _voteId: string | number): 
   return totalVotersBalance;
 }
 
-async function main() {
+export async function main(TotalDistributionAmount: BigNumber): Promise<Rewards> {
   const voteData = await fetchVoteData(web3, voteId);
   // snapshot blockNumber of DAO proposal vote
   const blockNumber = voteData.snapshotBlockNumber;
@@ -75,21 +75,16 @@ async function main() {
       .stakeValueAt(votingAddress, blockNumber)
       .call();
     // percentage and distributionAmount calculations include 'factor' to enable a good decimal approximation in the computation
+    const factor = TotalDistributionAmount.div(100000);
     const percentage = BigNumber.from(stakedValueAt).mul(factor).div(totalVoteBalance);
-    const distributionAmount = DISTRIBUTION_AMOUNT.div(factor).mul(percentage);
+    const distributionAmount = TotalDistributionAmount.div(factor).mul(percentage);
 
     distributionObject[i] = { _address: votingAddress, _amount: distributionAmount };
   }
 
-  console.log('Distribution Object:', distributionObject);
-
-  console.log('Distribution amount set initially:', ethers.utils.formatEther(DISTRIBUTION_AMOUNT));
-  console.log(
-    'Sum of voters rewards after distributions calculations: ',
-    ethers.utils.formatEther(getSum(distributionObject))
-  );
+  return distributionObject;
 }
 
-(async () => {
-  await main();
-})();
+// (async () => {
+//   await main();
+// })();
