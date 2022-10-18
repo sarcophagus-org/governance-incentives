@@ -17,14 +17,14 @@ if (!process.env.VOTE_ID) {
   throw Error('Vote ID is required as an env variable');
 }
 // id of the vote to query
-const voteId: string = process.env.VOTE_ID;
+export const voteId: string = process.env.VOTE_ID;
 // TODO: This will come from the collection contract
 // const DISTRIBUTION_AMOUNT = ethers.utils.parseEther('100');
 // helper variable used to achieve a good decimal approximation in the rewards distribution calculation
 // const factor = DISTRIBUTION_AMOUNT.div(100000);
 
 // fetch SARCO staking contract that gives stakers voting rights tokens (SarcoVR)
-const web3 = new Web3(
+export const web3 = new Web3(
   new Web3.providers.HttpProvider(
     `https://${process.env.ETHEREUM_NETWORK}.infura.io/v3/${process.env.INFURA_API_KEY}`
   )

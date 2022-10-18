@@ -8,9 +8,8 @@
     "start": "CHAIN_ID=1 ts-node ./src/index.ts",
     "staking": "ts-node ./src/queries/staking-addresses.ts",
     "chain": "npx hardhat node",
-    "distribution": "npx hardhat run --network localhost scripts/distribution.ts",
-    "test": "npx hardhat test",
-    "deploy:rinkeby": "npx hardhat run --network rinkeby scripts/deploy.ts"
+    "distribution": "npx hardhat run --network localhost ./src/scripts/distribution.ts",
+    "test": "npx hardhat test"
   },
   "devDependencies": {
     "@sarcophagus-org/sarcophagus-v2-contracts": "^0.1.0",
