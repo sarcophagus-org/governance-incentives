@@ -4,8 +4,7 @@ import { Collection__factory } from '../typechain-types/factories/contracts/Coll
 import { main } from '../src/index';
 require('dotenv').config();
 
-// change script name and function name
-async function hello() {
+async function distribution() {
   const signers = await ethers.getSigners();
   console.log('collection contract address:', process.env.COLLECTION_CONTRACT_ADDRESS);
 
@@ -21,9 +20,10 @@ async function hello() {
 
   await collection.connect(signers[0]).allocateRewards(distributionObject);
   console.log('unallocated after', await collection.unallocatedRewards());
+  console.log('claimable by voters:', await collection.claimableByVoters());
 }
 
-hello()
+distribution()
   .then(() => process.exit(0))
   .catch(error => {
     console.error(error);

@@ -7,11 +7,10 @@
   "scripts": {
     "start": "CHAIN_ID=1 ts-node ./src/index.ts",
     "staking": "ts-node ./src/queries/staking-addresses.ts",
-    "clean": "npx hardhat clean",
     "chain": "npx hardhat node",
-    "deploy": "npx hardhat run --network localhost scripts/deploy.ts",
-    "deploy:rinkeby": "npx hardhat run --network rinkeby scripts/deploy.ts",
-    "test": "npx hardhat test"
+    "distribution": "npx hardhat run --network localhost scripts/distribution.ts",
+    "test": "npx hardhat test",
+    "deploy:rinkeby": "npx hardhat run --network rinkeby scripts/deploy.ts"
   },
   "devDependencies": {
     "@sarcophagus-org/sarcophagus-v2-contracts": "^0.1.0",

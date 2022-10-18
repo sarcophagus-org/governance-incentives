@@ -6,12 +6,12 @@ require('dotenv').config();
 export const zero = ethers.constants.Zero;
 
 // we want to pass by an array of this reward struct
-interface Reward {
+export interface Reward {
   _address: string;
   _amount: BigNumber;
 }
 
-type Rewards = Array<Reward>;
+export type Rewards = Array<Reward>;
 
 if (!process.env.VOTE_ID) {
   throw Error('Vote ID is required as an env variable');
