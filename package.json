@@ -6,9 +6,15 @@
   "license": "MIT",
   "scripts": {
     "start": "CHAIN_ID=1 ts-node ./src/index.ts",
-    "staking": "ts-node ./src/queries/staking-addresses.ts"
+    "staking": "ts-node ./src/queries/staking-addresses.ts",
+    "test": "npx mocha --require ts-node/register test/*.spec.ts --timeout 10000"
   },
   "devDependencies": {
+    "@types/chai": "^4.3.3",
+    "@types/mocha": "^10.0.0",
+    "chai": "^4.3.6",
+    "ethereum-waffle": "^3.4.4",
+    "mocha": "^10.0.0",
     "ts-node": "^8.10.2",
     "typescript": "^3.9.6"
   },
@@ -16,11 +22,26 @@
     "@aragon/connect": "^0.8.0-alpha.6",
     "@aragon/connect-tokens": "^0.7.0",
     "@aragon/connect-voting": "^0.8.0-alpha.6",
-    "@types/node": "^18.7.14",
+    "@graphprotocol/graph-cli": "0.33.1",
+    "@graphprotocol/graph-ts": "0.27.0",
+    "@types/node": "^18.8.5",
+    "@typescript-eslint/eslint-plugin": "^5.39.0",
+    "@typescript-eslint/parser": "^5.39.0",
     "axios": "^0.27.2",
     "dotenv": "^16.0.2",
-    "web3": "^1.7.5",
-    "@graphprotocol/graph-cli": "0.33.1",
-    "@graphprotocol/graph-ts": "0.27.0"
+    "eslint": "^8.24.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-airbnb-typescript": "^17.0.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-jsx-a11y": "^6.5.1",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-react": "^7.31.8",
+    "eslint-plugin-react-hooks": "^4.5.0",
+    "ethers": "^5.7.1",
+    "jest-react": "^0.14.0",
+    "react": "^18.2.0",
+    "react-scripts": "^5.0.1",
+    "ts-node": "^10.9.1",
+    "web3": "^1.8.0"
   }
 }
