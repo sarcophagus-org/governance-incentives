@@ -1,39 +1,31 @@
-import { ethers } from 'hardhat';
 import type { Collection } from '../../typechain-types/contracts/Collection';
 import { Collection__factory } from '../../typechain-types/factories/contracts/Collection__factory';
-import { main } from '../index';
+import { calculateRewardsAmounts } from '../index';
+import * as hre from 'hardhat';
+
 require('dotenv').config();
 
 export async function distribution() {
-  const signers = await ethers.getSigners();
+  // const signers = await ethers.getSigners();
 
   console.log('collection contract address:', process.env.COLLECTION_CONTRACT_ADDRESS);
+
+  // TODO: how to set it as Signer | Provider type
+  const { deployer } = await hre.getNamedAccounts();
+
+  console.log(deployer);
   const collection: Collection = Collection__factory.connect(
     process.env.COLLECTION_CONTRACT_ADDRESS!,
-    signers[0]
+    deployer
   );
 
-  console.log('unallocated rewards start here');
+  const scriptInput = await collection.connect(deployer).unallocatedRewards();
 
-  console.log('unallocated before', await collection.connect(signers[0]).unallocatedRewards());
-  const scriptInput = await collection.connect(signers[0]).unallocatedRewards();
-  const distributionArray = await main(scriptInput);
+  const distributionArray = await calculateRewardsAmounts(scriptInput);
 
-  await collection.connect(signers[0]).allocateRewards(distributionArray);
-  console.log('unallocated after', await collection.connect(signers[0]).unallocatedRewards());
-  console.log('claimable by voters:', await collection.connect(signers[0]).claimableByVoters());
-}
-
-export async function getInternalBalance(address: string) {
-  const signers = await ethers.getSigners();
-
-  const collection: Collection = Collection__factory.connect(
-    process.env.COLLECTION_CONTRACT_ADDRESS!,
-    signers[0]
-  );
-
-  const addressBalance = await collection.balanceOf(address);
-  return addressBalance;
+  await collection.connect(deployer).allocateRewards(distributionArray);
+  console.log('unallocated after', await collection.connect(deployer).unallocatedRewards());
+  console.log('claimable by voters:', await collection.connect(deployer).claimableByVoters());
 }
 
 distribution()

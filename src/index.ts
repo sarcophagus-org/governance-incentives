@@ -18,10 +18,6 @@ if (!process.env.VOTE_ID) {
 }
 // id of the vote to query
 export const voteId: string = process.env.VOTE_ID;
-// TODO: This will come from the collection contract
-// const DISTRIBUTION_AMOUNT = ethers.utils.parseEther('100');
-// helper variable used to achieve a good decimal approximation in the rewards distribution calculation
-// const factor = DISTRIBUTION_AMOUNT.div(100000);
 
 // fetch SARCO staking contract that gives stakers voting rights tokens (SarcoVR)
 export const web3 = new Web3(
@@ -50,15 +46,17 @@ async function getTotalVotersBalance(voteData: VotingData): Promise<BigNumber> {
   return totalVotersBalance;
 }
 
-export async function main(TotalDistributionAmount: BigNumber): Promise<Rewards> {
+export async function calculateRewardsAmounts(
+  TotalDistributionAmount: BigNumber
+): Promise<Rewards> {
   const voteData = await fetchVoteData(web3, voteId);
   // snapshot blockNumber of DAO proposal vote
   const blockNumber = voteData.snapshotBlockNumber;
   // fetch total amount of SarcoVR held by voters for a given voteId
   const totalVoteBalance = await getTotalVotersBalance(voteData);
 
-  // construct mapping of voters' addresses and rewards to be allocated
-  const distributionObject: Rewards = [];
+  // construct object array of voters' addresses and rewards to be allocated
+  const rewardsObject: Rewards = [];
   for (let i = 0; i < voteData.addresses.length; i++) {
     const votingAddress = voteData.addresses[i];
     const stakedValueAt: BigNumber = await stakingContract.methods
@@ -69,12 +67,12 @@ export async function main(TotalDistributionAmount: BigNumber): Promise<Rewards>
     const percentage = BigNumber.from(stakedValueAt).mul(factor).div(totalVoteBalance);
     const distributionAmount = TotalDistributionAmount.div(factor).mul(percentage);
 
-    distributionObject[i] = { _address: votingAddress, _amount: distributionAmount };
+    rewardsObject[i] = { _address: votingAddress, _amount: distributionAmount };
   }
 
-  return distributionObject;
+  return rewardsObject;
 }
 
 // (async () => {
-//   await main();
+//   await calculateRewardsAmounts();
 // })();

@@ -12,7 +12,6 @@
     "test": "npx hardhat test"
   },
   "devDependencies": {
-    "@sarcophagus-org/sarcophagus-v2-contracts": "^0.1.0",
     "@types/chai": "^4.3.3",
     "@types/mocha": "^10.0.0",
     "@types/node": "^18.11.0",
@@ -26,6 +25,7 @@
   "dependencies": {
     "@aragon/connect": "^0.8.0-alpha.6",
     "@aragon/connect-tokens": "^0.7.0",
+    "hardhat-deploy": "^0.11.18",
     "@aragon/connect-voting": "^0.8.0-alpha.6",
     "@graphprotocol/graph-cli": "0.33.1",
     "@graphprotocol/graph-ts": "0.27.0",
