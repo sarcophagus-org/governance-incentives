@@ -1,33 +1,26 @@
 import { ethers } from 'hardhat';
 import type { Collection } from '../typechain-types/contracts/Collection';
 import { Collection__factory } from '../typechain-types/factories/contracts/Collection__factory';
-require('dotenv').config();
 import { main } from '../src/index';
+require('dotenv').config();
 
 // change script name and function name
 async function hello() {
-  const rpcProvider = new ethers.providers.JsonRpcProvider(process.env.PROVIDER_URL);
-  const ethWallet = ethers.Wallet.createRandom();
-  // const encryptionWallet = ethers.Wallet.createRandom();
-  const signer = rpcProvider.getSigner(ethWallet.address);
-
+  const signers = await ethers.getSigners();
   console.log('collection contract address:', process.env.COLLECTION_CONTRACT_ADDRESS);
 
-  // TODO: how to automatically deploy the contract on hardhat?
   const collection: Collection = Collection__factory.connect(
     process.env.COLLECTION_CONTRACT_ADDRESS!,
-    signer
+    signers[0]
   );
 
-  console.log(await collection.unallocatedRewards());
+  console.log('unallocated before', await collection.unallocatedRewards());
   const scriptInput = await collection.unallocatedRewards();
   // import script
   const distributionObject = await main(scriptInput);
 
-  console.log(account[0]);
-
-  // onlyOwner
-  // await collection.allocateRewards(distributionObject);
+  await collection.connect(signers[0]).allocateRewards(distributionObject);
+  console.log('unallocated after', await collection.unallocatedRewards());
 }
 
 hello()
