@@ -13,6 +13,8 @@ export async function distribution() {
     signers[0]
   );
 
+  console.log('unallocated rewards start here');
+
   console.log('unallocated before', await collection.connect(signers[0]).unallocatedRewards());
   const scriptInput = await collection.connect(signers[0]).unallocatedRewards();
   const distributionArray = await main(scriptInput);
