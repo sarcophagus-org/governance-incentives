@@ -1,7 +1,7 @@
 import type { Collection } from '../../typechain-types/contracts/Collection';
 import { Collection__factory } from '../../typechain-types/factories/contracts/Collection__factory';
 import { calculateRewardsAmounts } from '../index';
-import * as hre from 'hardhat';
+import hre from 'hardhat';
 
 require('dotenv').config();
 
@@ -11,7 +11,7 @@ export async function distribution() {
   console.log('collection contract address:', process.env.COLLECTION_CONTRACT_ADDRESS);
 
   // TODO: how to set it as Signer | Provider type
-  const { deployer } = await hre.getNamedAccounts();
+  const { deployer } = await hre.ethers.getNamedSigners();
 
   console.log(deployer);
   const collection: Collection = Collection__factory.connect(
