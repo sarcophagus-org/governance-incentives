@@ -25,7 +25,7 @@ export async function distribution() {
   await collection.connect(signer).allocateRewards(distributionArray);
   console.log('claimable by voters:', await collection.connect(deployer).claimableByVoters());
   console.log(
-    'internal balance last voter:',
+    'internal balance last voter sanity check:',
     await collection.connect(deployer).balanceOf('0xe294dc2cbb49472be1cf2beeff971d45859bb89c')
   );
 }
