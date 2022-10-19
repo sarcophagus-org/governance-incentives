@@ -1,31 +1,33 @@
 import type { Collection } from '../../typechain-types/contracts/Collection';
 import { Collection__factory } from '../../typechain-types/factories/contracts/Collection__factory';
 import { calculateRewardsAmounts } from '../index';
-import hre from 'hardhat';
+import hre, { ethers } from 'hardhat';
 
 require('dotenv').config();
 
 export async function distribution() {
-  // const signers = await ethers.getSigners();
-
   console.log('collection contract address:', process.env.COLLECTION_CONTRACT_ADDRESS);
 
-  // TODO: how to set it as Signer | Provider type
-  const { deployer } = await hre.ethers.getNamedSigners();
+  const { deployer } = await hre.getNamedAccounts();
 
-  console.log(deployer);
+  const signer = await hre.ethers.getSigner(deployer);
+
   const collection: Collection = Collection__factory.connect(
     process.env.COLLECTION_CONTRACT_ADDRESS!,
-    deployer
+    signer
   );
 
-  const scriptInput = await collection.connect(deployer).unallocatedRewards();
-
+  const scriptInput = await collection.unallocatedRewards();
   const distributionArray = await calculateRewardsAmounts(scriptInput);
+  console.log(distributionArray);
 
-  await collection.connect(deployer).allocateRewards(distributionArray);
-  console.log('unallocated after', await collection.connect(deployer).unallocatedRewards());
+  console.log('claimable by voters before allocation:', await collection.claimableByVoters());
+  await collection.connect(signer).allocateRewards(distributionArray);
   console.log('claimable by voters:', await collection.connect(deployer).claimableByVoters());
+  console.log(
+    'internal balance last voter:',
+    await collection.connect(deployer).balanceOf('0xe294dc2cbb49472be1cf2beeff971d45859bb89c')
+  );
 }
 
 distribution()

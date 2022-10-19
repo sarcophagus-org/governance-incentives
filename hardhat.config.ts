@@ -5,6 +5,8 @@ import '@nomiclabs/hardhat-waffle';
 import '@nomiclabs/hardhat-ethers';
 import '@typechain/hardhat';
 import 'hardhat-deploy';
+import 'hardhat-contract-sizer';
+import '@nomiclabs/hardhat-solhint';
 
 dotenv.config();
 
