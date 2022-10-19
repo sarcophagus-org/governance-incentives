@@ -18,16 +18,9 @@ export async function distribution() {
 
   const scriptInput = await collection.unallocatedRewards();
   const distributionArray = await calculateRewardsAmounts(scriptInput);
-  console.log(distributionArray);
 
-  console.log('claimable by voters before allocation:', await collection.claimableByVoters());
   // allocate rewards to voters
   await collection.connect(signer).allocateRewards(distributionArray);
-  console.log('claimable by voters:', await collection.connect(deployer).claimableByVoters());
-  console.log(
-    'internal balance last voter sanity check:',
-    await collection.connect(deployer).balanceOf('0xe294dc2cbb49472be1cf2beeff971d45859bb89c')
-  );
 }
 
 distribution()
