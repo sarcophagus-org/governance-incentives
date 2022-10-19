@@ -10,8 +10,9 @@ export interface VotingData {
   snapshotBlockNumber: number;
 }
 
+console.log(process.env.CHAIN_ID);
 const aragonEnv = {
-  network: parseInt(process.env.CHAIN_ID, 10),
+  network: parseInt(process.env.CHAIN_ID as string, 10),
   location: process.env.ORGANIZATION ?? 'sarcophagus.aragonid.eth',
 };
 
@@ -24,7 +25,7 @@ const aragonEnv = {
  */
 function formatVoteId(
   id: string | number,
-  votingContractAddress: string = process.env.VOTING_CONTRACT_ADDRESS
+  votingContractAddress: string = process.env.VOTING_CONTRACT_ADDRESS as string
 ): string {
   const aragonVoteIdPrefix = `appAddress:${votingContractAddress}-vote:`;
   const aragonVoteId = aragonVoteIdPrefix + '0x' + Number(Number(id).toString(16)).toString(16);

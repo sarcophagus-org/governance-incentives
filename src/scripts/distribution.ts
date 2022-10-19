@@ -1,7 +1,7 @@
 import type { Collection } from '../../typechain-types/contracts/Collection';
 import { Collection__factory } from '../../typechain-types/factories/contracts/Collection__factory';
 import { calculateRewardsAmounts } from '../index';
-import hre, { ethers } from 'hardhat';
+import hre from 'hardhat';
 
 require('dotenv').config();
 
@@ -9,7 +9,6 @@ export async function distribution() {
   console.log('collection contract address:', process.env.COLLECTION_CONTRACT_ADDRESS);
 
   const { deployer } = await hre.getNamedAccounts();
-
   const signer = await hre.ethers.getSigner(deployer);
 
   const collection: Collection = Collection__factory.connect(
@@ -22,6 +21,7 @@ export async function distribution() {
   console.log(distributionArray);
 
   console.log('claimable by voters before allocation:', await collection.claimableByVoters());
+  // allocate rewards to voters
   await collection.connect(signer).allocateRewards(distributionArray);
   console.log('claimable by voters:', await collection.connect(deployer).claimableByVoters());
   console.log(
