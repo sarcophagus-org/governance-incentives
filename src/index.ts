@@ -5,7 +5,6 @@ import * as fs from 'fs';
 require('dotenv').config();
 export const zero = ethers.constants.Zero;
 
-// we want to pass by an array of this reward struct
 export interface Reward {
   _address: string;
   _amount: BigNumber;
@@ -16,7 +15,7 @@ export type Rewards = Array<Reward>;
 if (!process.env.VOTE_ID) {
   throw Error('Vote ID is required as an env variable');
 }
-// id of the vote to query
+// ID of the vote to query
 export const voteId: string = process.env.VOTE_ID;
 
 // fetch SARCO staking contract that gives stakers voting rights tokens (SarcoVR)

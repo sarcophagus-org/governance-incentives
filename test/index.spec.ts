@@ -1,7 +1,6 @@
 import { expect } from 'chai';
 import { calculateRewardsAmounts, zero, Rewards } from '../src/index';
 import { describe } from 'mocha';
-
 import { BigNumber, ethers } from 'ethers';
 
 // helper function that sums the BN values of the array of objects Rewards
