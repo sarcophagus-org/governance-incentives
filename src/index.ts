@@ -4,6 +4,7 @@ import Web3 from 'web3';
 import * as fs from 'fs';
 require('dotenv').config();
 export const zero = ethers.constants.Zero;
+const ROUNDING_FACTOR = 100000;
 
 export interface Reward {
   _address: string;
@@ -25,7 +26,10 @@ export const web3 = new Web3(
   )
 );
 const stakingContractABI = JSON.parse(fs.readFileSync('src/abi/sarcoStaking.json', 'utf-8'));
-const stakingContract = new web3.eth.Contract(stakingContractABI, process.env.CONTRACT_ADDRESS);
+const stakingContract = new web3.eth.Contract(
+  stakingContractABI,
+  process.env.STAKING_CONTRACT_ADDRESS
+);
 
 // helper function fetching the total SarcoVR held by voters for a certain vote
 // used to compute the proportions of rewards to distribute
@@ -62,7 +66,7 @@ export async function calculateRewardsAmounts(
       .stakeValueAt(votingAddress, blockNumber)
       .call();
     // percentage and distributionAmount calculations include 'factor' to enable a good decimal approximation in the computation
-    const factor = TotalDistributionAmount.div(100000);
+    const factor = TotalDistributionAmount.div(ROUNDING_FACTOR);
     const percentage = BigNumber.from(stakedValueAt).mul(factor).div(totalVoteBalance);
     const distributionAmount = TotalDistributionAmount.div(factor).mul(percentage);
 
