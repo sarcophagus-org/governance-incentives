@@ -7,11 +7,9 @@ export const zero = ethers.constants.Zero;
 const ROUNDING_FACTOR = 100000;
 
 export interface Reward {
-  _address: string;
-  _amount: BigNumber;
+  voterAddress: string;
+  rewardAmount: BigNumber;
 }
-
-export type Rewards = Array<Reward>;
 
 if (!process.env.VOTE_ID) {
   throw Error('Vote ID is required as an env variable');
@@ -51,7 +49,7 @@ async function getTotalVotersBalance(voteData: VotingData): Promise<BigNumber> {
 
 export async function calculateRewardsAmounts(
   TotalDistributionAmount: BigNumber
-): Promise<Rewards> {
+): Promise<Reward[]> {
   const voteData = await fetchVoteData(web3, voteId);
   // snapshot blockNumber of DAO proposal vote
   const blockNumber = voteData.snapshotBlockNumber;
@@ -59,7 +57,7 @@ export async function calculateRewardsAmounts(
   const totalVoteBalance = await getTotalVotersBalance(voteData);
 
   // construct object array of voters' addresses and rewards to be allocated
-  const rewardsObject: Rewards = [];
+  const rewardsObject: Reward[] = [];
   for (let i = 0; i < voteData.addresses.length; i++) {
     const votingAddress = voteData.addresses[i];
     const stakedValueAt: BigNumber = await stakingContract.methods
@@ -70,12 +68,12 @@ export async function calculateRewardsAmounts(
     const percentage = BigNumber.from(stakedValueAt).mul(factor).div(totalVoteBalance);
     const distributionAmount = TotalDistributionAmount.div(factor).mul(percentage);
 
-    rewardsObject[i] = { _address: votingAddress, _amount: distributionAmount };
+    rewardsObject[i] = { voterAddress: votingAddress, rewardAmount: distributionAmount };
   }
 
   return rewardsObject;
 }
 
-// (async () => {
-//   await calculateRewardsAmounts();
-// })();
+(async () => {
+  console.log(await calculateRewardsAmounts(BigNumber.from(process.env.TOTAL_REWARDS_WEI)));
+})();

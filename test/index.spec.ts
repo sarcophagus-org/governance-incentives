@@ -1,13 +1,13 @@
 import { expect } from 'chai';
-import { calculateRewardsAmounts, zero, Rewards } from '../src/index';
+import { calculateRewardsAmounts, zero, Reward } from '../src/index';
 import { describe } from 'mocha';
 import { BigNumber, ethers } from 'ethers';
 
 // helper function that sums the BN values of the array of objects Rewards
-function getSum(distributions: Rewards): BigNumber {
+function getSum(distributions: Reward[]): BigNumber {
   let sum = zero;
   for (let d of distributions) {
-    let value: BigNumber = d._amount;
+    let value: BigNumber = d.rewardAmount;
     sum = sum.add(value);
   }
   return sum;

@@ -11,7 +11,7 @@ export interface VotingData {
 }
 
 const aragonEnv = {
-  network: parseInt(process.env.CHAIN_ID as string, 10),
+  network: parseInt(process.env.CHAIN_ID!, 10),
   location: process.env.ORGANIZATION ?? 'sarcophagus.aragonid.eth',
 };
 
