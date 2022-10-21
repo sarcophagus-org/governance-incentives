@@ -70,7 +70,7 @@ export async function calculateRewardsAmounts(
     const distributionAmount = TotalDistributionAmount.div(factor).mul(percentage).toString();
 
     console.log('voter with address %s reward amount: ', votingAddress);
-    console.log(ethers.utils.formatEther(distributionAmount), ' SARCO');
+    console.log(Number(ethers.utils.formatEther(distributionAmount)).toFixed(3), ' SARCO');
     console.log('---');
 
     rewardsObject[i] = {
