@@ -58,6 +58,7 @@ export async function calculateRewardsAmounts(
 
   // construct object array of voters' addresses and rewards to be allocated
   const rewardsObject: Reward[] = [];
+  console.log('Vote ID: ', process.env.VOTE_ID);
   for (let i = 0; i < voteData.addresses.length; i++) {
     const votingAddress = voteData.addresses[i];
     const stakedValueAt: BigNumber = await stakingContract.methods
@@ -66,9 +67,16 @@ export async function calculateRewardsAmounts(
     // percentage and distributionAmount calculations include 'factor' to enable a good decimal approximation in the computation
     const factor = TotalDistributionAmount.div(ROUNDING_FACTOR);
     const percentage = BigNumber.from(stakedValueAt).mul(factor).div(totalVoteBalance);
-    const distributionAmount = TotalDistributionAmount.div(factor).mul(percentage);
+    const distributionAmount = TotalDistributionAmount.div(factor).mul(percentage).toString();
 
-    rewardsObject[i] = { voterAddress: votingAddress, rewardAmount: distributionAmount };
+    console.log('voter with address %s reward amount: ', votingAddress);
+    console.log(ethers.utils.formatEther(distributionAmount), ' SARCO');
+    console.log('---');
+
+    rewardsObject[i] = {
+      voterAddress: votingAddress,
+      rewardAmount: BigNumber.from(distributionAmount),
+    };
   }
 
   return rewardsObject;
