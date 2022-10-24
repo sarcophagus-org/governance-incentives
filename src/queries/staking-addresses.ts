@@ -1,6 +1,6 @@
-const Web3 = require('web3');
-const fs = require('fs');
-const abi = JSON.parse(fs.readFileSync('src/abi/sarcoStaking.json'));
+import Web3 from 'web3';
+import * as fs from 'fs';
+const abi = JSON.parse(fs.readFileSync('src/abi/sarcoStaking.json', 'utf-8'));
 
 /**
  * Returns all addresses that have historically staked Sarco
@@ -12,7 +12,7 @@ export async function stakingAddresses() {
     new Web3.providers.HttpProvider(`https://${network}.infura.io/v3/${process.env.INFURA_API_KEY}`)
   );
 
-  const contract = new web3.eth.Contract(abi, process.env.CONTRACT_ADDRESS);
+  const contract = new web3.eth.Contract(abi, process.env.STAKING_CONTRACT_ADDRESS);
 
   const onStakeObject = await contract.getPastEvents('OnStake', { fromBlock: 0 });
 
