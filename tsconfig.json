@@ -2,9 +2,11 @@
   "compilerOptions": {
     "module": "CommonJS",
     "target": "es2019",
-    "esModuleInterop": true
+    "strict": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "outDir": "dist"
   },
-  "include": ["./**/*.ts"],
-  "allowSyntheticDefaultImports": true,
-  "noImplicitAny": false
+  "include": ["src/scripts", "./test", "./**/*.ts", "./hardhat.config.ts"],
+  "files": ["./hardhat.config.ts"]
 }
